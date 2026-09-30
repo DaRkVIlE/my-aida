@@ -1,0 +1,195 @@
+﻿{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "name": "MANA 3.0 Gamification Engine Config",
+  "version": "3.1.0",
+  "author": "Gabe (Gabriel Lima) & Orion",
+  "enabled": true,
+  "decoupledMode": true,
+  "decoupledNotice": "AIDA never speaks of XP/levels in chat. The game engine runs on the HUD/Dashboard layer.",
+  "ranks": [
+    {
+      "tier": "E",
+      "title": "Novice Babbler",
+      "cefrEquivalent": "A1",
+      "minXp": 0,
+      "maxSessionsRequired": 10,
+      "targetAcquiredChunks": 30,
+      "badgeUrl": "/assets/badges/rank-e.png",
+      "perks": ["Acesso a 1 Daily Quest", "Voz TTS Padrão", "Relatório de Sessão Básico"]
+    },
+    {
+      "tier": "D",
+      "title": "Street Pathfinder",
+      "cefrEquivalent": "A2",
+      "minXp": 1000,
+      "maxSessionsRequired": 25,
+      "targetAcquiredChunks": 80,
+      "badgeUrl": "/assets/badges/rank-d.png",
+      "perks": ["Acesso a 2 Daily Quests", "Desbloqueio de Boss Raid 1 (Airport Chaos)"]
+    },
+    {
+      "tier": "C",
+      "title": "Conversational Player",
+      "cefrEquivalent": "B1",
+      "minXp": 3000,
+      "maxSessionsRequired": 50,
+      "targetAcquiredChunks": 180,
+      "badgeUrl": "/assets/badges/rank-c.png",
+      "perks": ["3 Daily Quests Simultâneas", "Multiplicador de Mana 1.2x", "Desbloqueio de Boss Raid 2 (Emergency Call)"]
+    },
+    {
+      "tier": "B",
+      "title": "Corporate Vanguard",
+      "cefrEquivalent": "B2",
+      "minXp": 7000,
+      "maxSessionsRequired": 90,
+      "targetAcquiredChunks": 350,
+      "badgeUrl": "/assets/badges/rank-b.png",
+      "perks": ["Acesso a Simulações de Negócios", "Desbloqueio de Boss Raid 3 (Project Pitch)"]
+    },
+    {
+      "tier": "A",
+      "title": "Articulate Sovereign",
+      "cefrEquivalent": "C1",
+      "minXp": 14000,
+      "maxSessionsRequired": 140,
+      "targetAcquiredChunks": 600,
+      "badgeUrl": "/assets/badges/rank-a.png",
+      "perks": ["Imersão Acadêmica & Debates", "Desbloqueio de Boss Raid 4 (Hostile Negotiation)"]
+    },
+    {
+      "tier": "S",
+      "title": "Native Shadow",
+      "cefrEquivalent": "C2",
+      "minXp": 25000,
+      "maxSessionsRequired": 200,
+      "targetAcquiredChunks": 1000,
+      "badgeUrl": "/assets/badges/rank-s.png",
+      "perks": ["Acesso Ilimitado a todas as Personas", "Certificação de Soberania Fluente chancelada por Gabe"]
+    }
+  ],
+  "b2MountainRoadmap": {
+    "totalEssentialChunks": 2500,
+    "targetProficiency": "B2 Independent Fluency",
+    "modules": [
+      {
+        "moduleId": "mod-01-unfreeze",
+        "moduleNumber": 1,
+        "title": "O Descongelamento (Base de Sobrevivência)",
+        "levelTarget": "A1",
+        "description": "Quebrar o medo do silêncio, cumprimentos, transações cotidianas básicas e identificação pessoal.",
+        "totalChunksTarget": 350,
+        "branches": [
+          { "style": "street_slang", "title": "Casual Cafe & Street Talk", "bonusXp": 200 },
+          { "style": "corporate_polite", "title": "Polite Reception & Check-in", "bonusXp": 200 }
+        ]
+      },
+      {
+        "moduleId": "mod-02-bics-engine",
+        "moduleNumber": 2,
+        "title": "O Motor do BICS (Dia a Dia & Conexões)",
+        "levelTarget": "A2",
+        "description": "Expressar rotina, preferências, direções, pedir ajuda e dominar os 50 conectores naturais mais usados.",
+        "totalChunksTarget": 650,
+        "branches": [
+          { "style": "street_slang", "title": "Hanging Out & Small Talk", "bonusXp": 300 },
+          { "style": "corporate_polite", "title": "Daily Standup & Office Basics", "bonusXp": 300 }
+        ]
+      },
+      {
+        "moduleId": "mod-03-narrative",
+        "moduleNumber": 3,
+        "title": "Narrativa, Passado & Imprevistos",
+        "levelTarget": "B1",
+        "description": "Contar histórias passadas sem hesitar, resolver perrengues em viagens e manter 20 minutos de conversa.",
+        "totalChunksTarget": 750,
+        "branches": [
+          { "style": "regional_idiom", "title": "Storytelling & Humor", "bonusXp": 400 },
+          { "style": "corporate_polite", "title": "Incident Reporting & Troubleshooting", "bonusXp": 400 }
+        ]
+      },
+      {
+        "moduleId": "mod-04-calp-vanguard",
+        "moduleNumber": 4,
+        "title": "Negociação, Nuances & Alta Pressão (Cume B2)",
+        "levelTarget": "B2",
+        "description": "Conduzir reuniões, defender pontos de vista contrários, negociar acordos e apresentar ideias com autoridade.",
+        "totalChunksTarget": 750,
+        "branches": [
+          { "style": "debate_nuance", "title": "Executive Debate & Persuasion", "bonusXp": 500 },
+          { "style": "street_slang", "title": "Native Banter & Deep Colloquialism", "bonusXp": 500 }
+        ]
+      },
+      {
+        "moduleId": "mod-05-c1-sovereignty",
+        "moduleNumber": 5,
+        "title": "Soberania & Lapidação de Elite (Trilha C1/C2)",
+        "levelTarget": "C1_refinement",
+        "description": "Para quem já fala: polimento fonético rítmico, sutilezas culturais, diplomacia corporativa e humor refinado.",
+        "totalChunksTarget": 1000,
+        "branches": [
+          { "style": "debate_nuance", "title": "C-Level Hostile Negotiations", "bonusXp": 800 },
+          { "style": "regional_idiom", "title": "Native Metaphors & Cultural Idioms", "bonusXp": 800 }
+        ]
+      }
+    ]
+  },
+  "scaffoldingHints": {
+    "enabled": true,
+    "pureRunBonusMultiplier": 1.5,
+    "pureRunFlatBonusXp": 50,
+    "pureRunFlatBonusMana": 25,
+    "hintPenaltyXpPercent": 0,
+    "description": "Hints give translated anchor words on demand. Zero penalty, but pure runs give a massive 50% extra XP bonus."
+  },
+  "playerLeaderboard": {
+    "enabled": true,
+    "publicDisplay": true,
+    "rankingMetric": "currentXp",
+    "displayFields": ["studentName", "rank", "currentXp", "conqueredModulesCount", "pureRunCount", "streakDays"]
+  },
+  "dailyQuestsConfig": {
+    "questsPerDay": 3,
+    "xpRewards": {
+      "audio_echo": 50,
+      "situational_sprint": 100,
+      "spontaneous_recall": 150
+    },
+    "manaRewards": {
+      "audio_echo": 20,
+      "situational_sprint": 30,
+      "spontaneous_recall": 50
+    }
+  },
+  "acquisitionMemoryXp": {
+    "nova": 0,
+    "em_processo": 25,
+    "adquirida": 100
+  },
+  "bossRaids": [
+    {
+      "id": "raid-01-jfk",
+      "rank": "E",
+      "title": "JFK Airport Shuttle Crisis",
+      "briefing": "Você acabou de pousar no JFK em Nova York, perdeu seu voo de conexão e precisa convencer o agente de terra a remarcar sem taxas extras.",
+      "minTurns": 8,
+      "pressureLevel": "moderate"
+    },
+    {
+      "id": "raid-02-meeting",
+      "rank": "D",
+      "title": "The Unexpected Team Standup",
+      "briefing": "O líder do projeto pede seu update repentino na call com clientes internacionais. Você tem 2 minutos para explicar o que fez e o bloqueio técnico.",
+      "minTurns": 10,
+      "pressureLevel": "high"
+    },
+    {
+      "id": "raid-03-pitch",
+      "rank": "C",
+      "title": "Executive Pitch Under Fire",
+      "briefing": "Um investidor cético questiona seus números de tração e quer saber por que sua solução é diferente da concorrência.",
+      "minTurns": 12,
+      "pressureLevel": "intense"
+    }
+  ]
+}

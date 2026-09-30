@@ -1,139 +1,214 @@
-import mongoose from 'mongoose';
-import { AcquisitionMemory } from './models/AcquisitionMemory';
+﻿import mongoose from 'mongoose';
+import { AcquisitionMemory, AcquisitionStatus } from './models/AcquisitionMemory';
 import { Evidence } from './models/Evidence';
+import { StudentProfile, PlayerRank } from './models/StudentProfile';
 
-interface ExtractedData {
+interface ExtractedLinguisticData {
   structures: string[];
-  new_words: string[];
+  vocabulary_chunks: string[];
+  is_spontaneous: boolean; // True if the student produced the structure without immediate copying
   confidence: number;
 }
 
+const RANK_THRESHOLDS: { rank: PlayerRank; minXp: number }[] = [
+  { rank: 'S', minXp: 25000 },
+  { rank: 'A', minXp: 14000 },
+  { rank: 'B', minXp: 7000 },
+  { rank: 'C', minXp: 3000 },
+  { rank: 'D', minXp: 1000 },
+  { rank: 'E', minXp: 0 },
+];
+
 /**
- * The core pedagogical engine. Runs asynchronously after a conversation turn.
- * Uses an LLM to extract linguistic evidence from the interaction and updates memory.
+ * Calculates current Player Rank based on total accumulated XP.
+ */
+function calculateRank(totalXp: number): PlayerRank {
+  for (const threshold of RANK_THRESHOLDS) {
+    if (totalXp >= threshold.minXp) {
+      return threshold.rank;
+    }
+  }
+  return 'E';
+}
+
+/**
+ * The core MANA 3.0 pedagogical and gamification engine.
+ * Runs asynchronously after each conversation turn.
+ * Uses an LLM to extract linguistic evidence, updates Acquisition Memory, awards XP,
+ * and tracks Pure Runs and Player Rank progression.
  */
 export async function runAcquisitionEngine(
   userId: string,
   studentMessage: string,
   agentResponse: string,
-  conversationId?: string
+  conversationId?: string,
+  hintsUsedInTurn: number = 0
 ) {
   try {
-    // We do not await this in the main thread to avoid blocking the UI response.
-    // This is fired and forgotten by the route.
-    
-    // 1. Call LLM to extract JSON
+    // 1. Call LLM to extract linguistic data with spontaneity detection
     const extracted = await extractLinguisticData(studentMessage, agentResponse);
     if (!extracted) return;
 
-    // 2. Process Structures and Words
-    const itemsToProcess = [...extracted.structures, ...extracted.new_words];
+    let turnXpAwarded = 0;
+    const itemsToProcess = [...extracted.structures, ...extracted.vocabulary_chunks];
 
     for (const item of itemsToProcess) {
-      // 3. Find or create AcquisitionMemory entry
-      let memory = await AcquisitionMemory.findOne({ user: userId, structure_name: item });
-      
+      const cleanItem = item.trim().toLowerCase();
+      if (!cleanItem || cleanItem.length < 2) continue;
+
+      let memory = await AcquisitionMemory.findOne({ user: userId, structure_name: cleanItem });
+
       if (!memory) {
         memory = new AcquisitionMemory({
           user: userId,
-          structure_name: item,
+          structure_name: cleanItem,
           structure_type: extracted.structures.includes(item) ? 'grammar' : 'vocabulary',
           status: 'NEW',
           introduced_at: new Date(),
           evidence_count: 0,
           confidence_level: 0,
+          is_spontaneous: extracted.is_spontaneous,
+          xp_awarded: 0,
         });
       }
 
-      // 4. Create Evidence record
+      // 2. Create Evidence record
       const evidence = new Evidence({
         user: userId,
         acquisition_memory_id: memory._id,
         conversation_id: conversationId ? new mongoose.Types.ObjectId(conversationId) : null,
-        context_used: studentMessage.substring(0, 200), // snippet of usage
+        context_used: studentMessage.substring(0, 200),
         confidence_score: extracted.confidence,
       });
 
       await evidence.save();
 
-      // 5. Update Memory stats and state machine
+      // 3. Update Memory stats and state machine
       memory.evidence_count += 1;
-      // Exponential moving average for confidence or simple sum (simplified here)
       memory.confidence_level = (memory.confidence_level + extracted.confidence) / 2;
       memory.last_seen = new Date();
+      memory.last_context = studentMessage;
 
-      // State transition logic
-      if (memory.evidence_count > 3 && memory.confidence_level > 0.7) {
+      // Anti-Farming State Machine:
+      // A structure is ACQUIRED only when used spontaneously with high confidence
+      let previousStatus = memory.status;
+      if (extracted.is_spontaneous && memory.evidence_count >= 2 && memory.confidence_level > 0.65) {
         memory.status = 'ACQUIRED';
       } else if (memory.evidence_count > 0) {
         memory.status = 'LEARNING';
       }
 
+      // XP Allocation:
+      // NEW -> LEARNING: +25 XP
+      // LEARNING -> ACQUIRED: +100 XP
+      if (previousStatus !== 'ACQUIRED' && memory.status === 'ACQUIRED') {
+        const xpGain = 100;
+        memory.xp_awarded += xpGain;
+        turnXpAwarded += xpGain;
+      } else if (previousStatus === 'NEW' && memory.status === 'LEARNING') {
+        const xpGain = 25;
+        memory.xp_awarded += xpGain;
+        turnXpAwarded += xpGain;
+      }
+
       await memory.save();
     }
+
+    // 4. Pure Run Bonus calculation
+    const isPureRun = hintsUsedInTurn === 0;
+    if (turnXpAwarded > 0 && isPureRun) {
+      // 50% bonus on earned XP for zero-hint performance
+      turnXpAwarded = Math.round(turnXpAwarded * 1.5);
+    }
+
+    // 5. Update StudentProfile with XP and Player Rank
+    if (turnXpAwarded > 0 || isPureRun) {
+      const student = await StudentProfile.findOne({ user: userId });
+      if (student) {
+        student.currentXp += turnXpAwarded;
+        if (isPureRun && turnXpAwarded > 0) {
+          student.totalPureRuns += 1;
+        }
+
+        // Check Rank level-up
+        const newRank = calculateRank(student.currentXp);
+        if (newRank !== student.playerRank) {
+          console.log(`[MANA 3.0] Student ${userId} ranked up from ${student.playerRank} to ${newRank}!`);
+          student.playerRank = newRank;
+        }
+
+        await student.save();
+      }
+    }
   } catch (error) {
-    console.error('[MANA] Acquisition Engine Error:', error);
+    console.error('[MANA 3.0] Acquisition Engine Error:', error);
   }
 }
 
 /**
- * Calls Groq (or configured LLM) to extract JSON structured output.
+ * Calls Groq (or OpenAI) to extract JSON structured output with spontaneity validation.
  */
-async function extractLinguisticData(studentMsg: string, agentMsg: string): Promise<ExtractedData | null> {
+async function extractLinguisticData(studentMsg: string, agentMsg: string): Promise<ExtractedLinguisticData | null> {
   const apiKey = process.env.GROQ_API_KEY || process.env.OPENAI_API_KEY;
   if (!apiKey) {
-    console.warn('[MANA] No API key found for Acquisition Engine extraction.');
+    console.warn('[MANA 3.0] No API key configured for linguistic extraction.');
     return null;
   }
 
-  const endpoint = process.env.GROQ_API_KEY 
-    ? 'https://api.groq.com/openai/v1/chat/completions' 
+  const endpoint = process.env.GROQ_API_KEY
+    ? 'https://api.groq.com/openai/v1/chat/completions'
     : 'https://api.openai.com/v1/chat/completions';
-  
+
   const model = process.env.GROQ_API_KEY ? 'llama-3.3-70b-versatile' : 'gpt-4o-mini';
 
-  const systemPrompt = `You are a linguistic extraction engine for an ESL learning system.
-Analyze the following conversation turn between a Student and an AI Agent.
-Identify any English grammatical structures (e.g. "Present Perfect", "Conditional") or complex vocabulary used BY THE STUDENT spontaneously.
+  const systemPrompt = `You are the MANA 3.0 Linguistic Acquisition & Anti-Farming Engine.
+Analyze the following conversation turn between an ESL Student and an AI Agent.
+Identify:
+1. "structures": grammatical patterns or connectors used by the student (e.g. "Present Perfect", "Conditionals", "Hedging language").
+2. "vocabulary_chunks": multi-word idiomatic chunks, collocations or phrasal verbs used by the student.
+3. "is_spontaneous": true ONLY if the student used the structure autonomously, and did NOT merely parrot words that the agent said in the previous turn.
+4. "confidence": float between 0.0 and 1.0 indicating how accurately and appropriately the student applied the structure in context.
+
 Return ONLY a valid JSON object matching this schema:
 {
   "structures": ["string"],
-  "new_words": ["string"],
-  "confidence": 0.0 to 1.0 (how confident are you that the student used them correctly and spontaneously, not just copying the agent)
+  "vocabulary_chunks": ["string"],
+  "is_spontaneous": boolean,
+  "confidence": number
 }
-Do not return markdown formatting, just the raw JSON object.`;
+Do not include markdown backticks or explanations.`;
 
-  const userPrompt = `Student said: "${studentMsg}"\nAgent replied: "${agentMsg}"`;
+  const userPrompt = `Agent said previously: "${agentMsg}"\nStudent responded: "${studentMsg}"`;
 
   try {
     const response = await fetch(endpoint, {
       method: 'POST',
       headers: {
         'Content-Type': 'application/json',
-        'Authorization': \`Bearer \${apiKey}\`
+        Authorization: `Bearer ${apiKey}`,
       },
       body: JSON.stringify({
         model: model,
         messages: [
           { role: 'system', content: systemPrompt },
-          { role: 'user', content: userPrompt }
+          { role: 'user', content: userPrompt },
         ],
         response_format: { type: 'json_object' },
-        temperature: 0.1
-      })
+        temperature: 0.1,
+      }),
     });
 
     if (!response.ok) {
-      console.error('[MANA] LLM Extraction failed:', await response.text());
+      console.error('[MANA 3.0] LLM Extraction failed:', await response.text());
       return null;
     }
 
     const data = await response.json();
     const content = data.choices[0].message.content;
-    const parsed = JSON.parse(content) as ExtractedData;
+    const parsed = JSON.parse(content) as ExtractedLinguisticData;
     return parsed;
   } catch (error) {
-    console.error('[MANA] Parse error in LLM extraction:', error);
+    console.error('[MANA 3.0] Error parsing linguistic extraction:', error);
     return null;
   }
 }

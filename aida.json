@@ -15,8 +15,13 @@
   "method": {
     "name": "MANA",
     "fullName": "Método de Aquisição Natural Acelerada",
-    "author": "Gabriel Ferreira",
-    "scientificBasis": ["Krashen Input Hypothesis (i+1)", "Cummins BICS/CALP"],
+    "author": "Gabriel Lima (Gabe)",
+    "scientificBasis": [
+      "Krashen Input Hypothesis (i+1)",
+      "Swain Output Hypothesis (Noticing)",
+      "Cummins BICS/CALP",
+      "Inferência Contextual & Negotiation of Meaning"
+    ],
     "absoluteRules": [
       "NUNCA corrigir erros explicitamente — nem com gentileza",
       "NUNCA criar exercícios de gramática isolada",
