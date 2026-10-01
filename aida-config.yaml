@@ -1,4 +1,4 @@
-version: 1.1.5
+version: 1.3.17
 cache: true
 
 # ── Interface: Zero-config para o aluno ───────────────────────────────────────
@@ -6,6 +6,9 @@ interface:
   modelSelect: false        # Oculta dropdown de modelos
   presets: false            # Oculta presets técnicos
   parameters: false         # Oculta temperatura, max_tokens etc.
+  agents:
+    use: true
+    create: true
   privacyPolicy:
     externalUrl: "https://experiasolutions.com.br"
     openNewTab: true
