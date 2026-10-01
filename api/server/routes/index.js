@@ -35,8 +35,10 @@ const user = require('./user');
 const mcp = require('./mcp');
 const rum = require('./rum');
 const gamification = require('./aida_gamification');
+const manaProfile = require('./manaProfile');
 
 module.exports = {
+  manaProfile,
   gamification,
   rum,
   mcp,

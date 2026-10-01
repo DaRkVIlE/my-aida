@@ -10,11 +10,11 @@ export interface PlayerHudProps {
 
 const xpThresholds = {
   E: 0,
-  D: 150,
-  C: 500,
-  B: 1200,
-  A: 2500,
-  S: 5000,
+  D: 1000,
+  C: 3000,
+  B: 7000,
+  A: 14000,
+  S: 25000,
 };
 
 const getNextRankThreshold = (currentRank: PlayerRank) => {
@@ -34,19 +34,20 @@ const PlayerHud: React.FC<PlayerHudProps> = ({ userId, isPureRun = false, classN
   const [isExpanded, setIsExpanded] = useState<boolean>(false);
   const { profile, isLoading } = usePlayerProfile(userId);
 
-  if (!profile && !isLoading) return null;
+  const defaultProfile = {
+    userId: userId || 'player',
+    playerRank: 'E' as PlayerRank,
+    currentXp: 0,
+    streakDays: 0,
+    totalPureRuns: 0,
+    currentMana: 100,
+    maxMana: 100,
+    conqueredModules: [],
+  };
+
+  const activeProfile = profile || defaultProfile;
 
   const toggleExpand = () => setIsExpanded(!isExpanded);
-
-  if (!profile) {
-    return (
-      <div className={`fixed bottom-4 right-4 z-50 ${className}`}>
-        <div className="bg-gray-900/95 backdrop-blur-sm border border-gray-700/50 rounded-xl shadow-2xl p-2 w-72 h-16 flex items-center justify-center text-gray-400">
-          Loading HUD...
-        </div>
-      </div>
-    );
-  }
 
   const {
     playerRank,
@@ -56,7 +57,7 @@ const PlayerHud: React.FC<PlayerHudProps> = ({ userId, isPureRun = false, classN
     currentMana,
     maxMana,
     conqueredModules,
-  } = profile;
+  } = activeProfile;
 
   const nextThreshold = getNextRankThreshold(playerRank);
   const currentThreshold = getPrevRankThreshold(playerRank);

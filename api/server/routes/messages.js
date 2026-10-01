@@ -11,6 +11,7 @@ const {
 const { findAllArtifacts, replaceArtifactContent } = require('~/server/services/Artifacts/update');
 const { requireJwtAuth, validateMessageReq } = require('~/server/middleware');
 const db = require('~/models');
+const { recordTurnActivity } = require('~/server/services/manaAcquisition');
 
 const router = express.Router();
 router.use(requireJwtAuth);
@@ -299,6 +300,9 @@ router.post('/:conversationId', validateMessageReq, async (req, res) => {
       return res.status(400).json({ error: 'Message not saved' });
     }
     await db.saveConvo(reqCtx, savedMessage, { context: 'POST /api/messages/:conversationId' });
+    if (savedMessage?.isCreatedByUser) {
+      recordTurnActivity(req.user.id, savedMessage.text);
+    }
     res.status(201).json(savedMessage);
   } catch (error) {
     logger.error('Error saving message:', error);

@@ -1,7 +1,7 @@
 {
-  "name": "LibreChat",
+  "name": "aida-agents-hub",
   "version": "v0.8.6",
-  "description": "",
+  "description": "AIDA Agents Hub — Plataforma de Imersão Ativa em Inglês com IA",
   "packageManager": "npm@11.13.0",
   "workspaces": [
     "api",

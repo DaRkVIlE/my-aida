@@ -56,11 +56,21 @@ const loadAidaDashboard = () =>
     Component: m.default,
   }));
 
+const loadLandingPageVSL = () =>
+  import('~/pages/LandingPageVSL').then((m) => ({
+    Component: m.default,
+  }));
+
 const baseEl = document.querySelector('base');
 const baseHref = baseEl?.getAttribute('href') || '/';
 
 export const router = createBrowserRouter(
   [
+    {
+      path: 'triagem',
+      lazy: loadLandingPageVSL,
+      errorElement: <RouteErrorBoundary />,
+    },
     {
       path: 'share/:shareId',
       element: <ShareRoute />,
@@ -142,6 +152,10 @@ export const router = createBrowserRouter(
             {
               path: 'aida-dashboard',
               lazy: loadAidaDashboard,
+            },
+            {
+              path: 'triagem',
+              lazy: loadLandingPageVSL,
             },
             {
               path: 'prompts',

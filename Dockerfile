@@ -3,13 +3,26 @@ FROM ghcr.io/danny-avila/librechat-dev:latest
 # Copia as configurações da AIDA para dentro da imagem oficial
 COPY aida-config.yaml /app/librechat.yaml
 
-# Substitui as logos do LibreChat e branding pela AIDA
+# Copia o backend customizado (rotas MANA, Gamification models, manaAcquisition)
+COPY api/ /app/api/
+
+# Copia o frontend customizado (MANA components, hooks, rotas, LandingPageVSL)
+COPY client/ /app/client/
+
+# Substitui as logos do LibreChat e branding pela AIDA nos fontes públicos
 COPY aida-logo.svg /app/client/public/assets/logo.svg
-COPY aida-logo.svg /app/client/dist/assets/logo.svg
-COPY client/public/assets/aida-og.png /app/client/dist/assets/aida-og.png
 COPY client/public/assets/aida-og.png /app/client/public/assets/aida-og.png
 
-# Injeta o branding no index.html PRÉ-COMPILADO e recria o PWA Manifest
+# Reconstrói o frontend Vite com as novidades e rotas do MANA 3.0
+WORKDIR /app/client
+RUN npm run build
+WORKDIR /app
+
+# Assegura a logo e banner da AIDA no dist gerado
+COPY aida-logo.svg /app/client/dist/assets/logo.svg
+COPY client/public/assets/aida-og.png /app/client/dist/assets/aida-og.png
+
+# Injeta o branding no index.html e recria o PWA Manifest
 RUN node -e "\
 const fs = require('fs');\
 const path = '/app/client/dist/index.html';\
@@ -46,22 +59,38 @@ const assetsDir = '/app/client/dist/assets';\
 if (fs.existsSync(assetsDir)) {\
   const files = fs.readdirSync(assetsDir);\
   for (const file of files) {\
-    if (file.endsWith('.js')) {\
+    if (file.endsWith('.js') || file.endsWith('.html') || file.endsWith('.json')) {\
       const filePath = assetsDir + '/' + file;\
       let content = fs.readFileSync(filePath, 'utf8');\
-      if (content.includes('\"LibreChat\"') || content.includes(\"'LibreChat'\")) {\
-        content = content.replace(/\"LibreChat\"/g, '\"AIDA\"');\
-        content = content.replace(/'LibreChat'/g, \"'AIDA'\");\
-        fs.writeFileSync(filePath, content);\
-      }\
+      content = content.replace(/https:\\/\\/www\\.librechat\\.ai/g, 'https://aida.experiasolutions.com.br');\
+      content = content.replace(/https:\\/\\/librechat\\.ai/g, 'https://aida.experiasolutions.com.br');\
+      content = content.replace(/https:\\/\\/github\\.com\\/danny-avila\\/LibreChat/g, 'https://experiasolutions.com.br');\
+      content = content.replace(/noreply@librechat\\.ai/g, 'noreply@experiasolutions.com.br');\
+      content = content.replace(/contact@librechat\\.ai/g, 'contato@experiasolutions.com.br');\
+      content = content.replace(/\\\"LibreChat\\\"/g, '\\\"AIDA\\\"');\
+      content = content.replace(/'LibreChat'/g, \"'AIDA'\");\
+      content = content.replace(/`LibreChat`/g, '`AIDA`');\
+      content = content.replace(/>LibreChat</g, '>AIDA<');\
+      fs.writeFileSync(filePath, content);\
     }\
   }\
 }\
+const pkgPath = '/app/package.json';\
+if (fs.existsSync(pkgPath)) {\
+  let pkg = JSON.parse(fs.readFileSync(pkgPath, 'utf8'));\
+  pkg.name = 'aida-agents-hub';\
+  pkg.description = 'AIDA Agents Hub — Plataforma de Imersão Ativa em Inglês com IA';\
+  fs.writeFileSync(pkgPath, JSON.stringify(pkg, null, 2));\
+}\
 "
 
-# Variáveis padrão
+# Variáveis padrão e Branding AIDA
 ENV HOST=0.0.0.0
 ENV PORT=8080
+ENV APP_TITLE=AIDA
+ENV HELP_AND_FAQ_URL=https://experiasolutions.com.br
+ENV CUSTOM_FOOTER="[AIDA](https://aida.experiasolutions.com.br) — Imersão Ativa em Inglês com IA"
 EXPOSE 8080
 
 CMD ["npm", "run", "backend"]
+

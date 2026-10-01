@@ -35,10 +35,7 @@ function Footer({ className, startupConfig }: FooterProps) {
   const mainContentParts = (
     typeof config?.customFooter === 'string'
       ? config.customFooter
-      : '[LibreChat ' +
-        Constants.VERSION +
-        '](https://librechat.ai) - ' +
-        localize('com_ui_latest_footer')
+      : '[AIDA](https://aida.experiasolutions.com.br) — Imersão Ativa em Inglês com IA'
   ).split('|');
 
   useEffect(() => {

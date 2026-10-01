@@ -12,9 +12,43 @@ const gamificationSchema = new mongoose.Schema(
       type: Number,
       default: 0,
     },
+    currentXp: {
+      type: Number,
+      default: 0,
+    },
+    playerRank: {
+      type: String,
+      enum: ['E', 'D', 'C', 'B', 'A', 'S'],
+      default: 'E',
+    },
+    totalPureRuns: {
+      type: Number,
+      default: 0,
+    },
+    conqueredModules: {
+      type: [String],
+      default: [],
+    },
+    currentMana: {
+      type: Number,
+      default: 100,
+    },
+    maxMana: {
+      type: Number,
+      default: 100,
+    },
+    nivelDiagnosticado: {
+      type: String,
+      enum: ['P1', 'P2', 'P3', 'P4', 'P5'],
+      default: 'P1',
+    },
+    personaIdeal: {
+      type: String,
+      default: 'Jordan',
+    },
     currentLevel: {
       type: String,
-      default: 'Degrau 1',
+      default: 'Rank E — Iniciante',
     },
     streakDays: {
       type: Number,
@@ -31,6 +65,7 @@ const gamificationSchema = new mongoose.Schema(
     history: [
       {
         xp: Number,
+        pureRun: { type: Boolean, default: false },
         date: { type: Date, default: Date.now },
         messageId: String,
       },

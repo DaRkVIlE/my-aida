@@ -82,8 +82,8 @@ export default function Root() {
                       transition: 'transform 300ms cubic-bezier(0.2, 0, 0, 1)',
                     }}
                     inert={isSmallScreen && sidebarExpanded ? '' : undefined}
-                  >
                     <Outlet />
+                    {user && <PlayerHud userId={user.id} />}
                   </div>
                 </div>
               </div>
