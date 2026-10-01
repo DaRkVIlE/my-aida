@@ -22,6 +22,7 @@ import { UnifiedSidebar } from '~/components/UnifiedSidebar';
 import { TermsAndConditionsModal } from '~/components/ui';
 import { useHealthCheck } from '~/data-provider';
 import { Banner } from '~/components/Banners';
+import { PlayerHud } from '~/components/mana';
 
 export default function Root() {
   const [showTerms, setShowTerms] = useState(false);
@@ -29,7 +30,7 @@ export default function Root() {
   const sidebarExpanded = useRecoilValue(store.sidebarExpanded);
   const isSmallScreen = useMediaQuery('(max-width: 768px)');
 
-  const { isAuthenticated, logout } = useAuthContext();
+  const { isAuthenticated, logout, user } = useAuthContext();
 
   useHealthCheck(isAuthenticated);
 
