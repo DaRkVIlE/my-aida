@@ -1,4 +1,4 @@
-﻿import mongoose from 'mongoose';
+import mongoose from 'mongoose';
 import { AcquisitionMemory, AcquisitionStatus } from './models/AcquisitionMemory';
 import { Evidence } from './models/Evidence';
 import { StudentProfile, PlayerRank } from './models/StudentProfile';
@@ -44,9 +44,11 @@ export async function runAcquisitionEngine(
   conversationId?: string,
   hintsUsedInTurn: number = 0
 ) {
-  try {
-    // 1. Call LLM to extract linguistic data with spontaneity detection
-    const extracted = await extractLinguisticData(studentMessage, agentResponse);
+    const student = await StudentProfile.findOne({ user: userId });
+    const studentLevel = student?.nivel_diagnosticado || 'P3_intermediario';
+
+    // 1. Call LLM to extract linguistic data with dynamic level-scaled chunks and spontaneity detection
+    const extracted = await extractLinguisticData(studentMessage, agentResponse, studentLevel);
     if (!extracted) return;
 
     let turnXpAwarded = 0;
@@ -148,7 +150,11 @@ export async function runAcquisitionEngine(
 /**
  * Calls Groq (or OpenAI) to extract JSON structured output with spontaneity validation.
  */
-async function extractLinguisticData(studentMsg: string, agentMsg: string): Promise<ExtractedLinguisticData | null> {
+async function extractLinguisticData(
+  studentMsg: string,
+  agentMsg: string,
+  studentLevel: string = 'P3_intermediario'
+): Promise<ExtractedLinguisticData | null> {
   const apiKey = process.env.GROQ_API_KEY || process.env.OPENAI_API_KEY;
   if (!apiKey) {
     console.warn('[MANA 3.0] No API key configured for linguistic extraction.');
@@ -161,13 +167,21 @@ async function extractLinguisticData(studentMsg: string, agentMsg: string): Prom
 
   const model = process.env.GROQ_API_KEY ? 'llama-3.3-70b-versatile' : 'gpt-4o-mini';
 
-  const systemPrompt = `You are the MANA 3.0 Linguistic Acquisition & Anti-Farming Engine.
-Analyze the following conversation turn between an ESL Student and an AI Agent.
+  const systemPrompt = `You are the MANA 3.0 Dynamic Linguistic Acquisition & Anti-Farming Engine.
+The student is currently at level: "${studentLevel}".
+Chunks and structures are NOT rigid or truncated; they adapt dynamically to the student's proficiency level:
+- For P1 (Beginner): Extract foundational 1-2 word functional chunks and core vocabulary.
+- For P2 (Elementary): Extract multi-word everyday expressions and basic connectors.
+- For P3 (Intermediate): Extract natural conversational collocations, discourse connectors, and spoken idioms.
+- For P4 (Upper-Intermediate): Extract professional collocations, CALP patterns, and boardroom negotiation chunks.
+- For P5 (Advanced/Sovereign): Extract nuanced rhetoric, cultural idioms, and advanced stylistic collocations.
+
+Analyze the conversation turn between the Student and the AI Agent.
 Identify:
-1. "structures": grammatical patterns or connectors used by the student (e.g. "Present Perfect", "Conditionals", "Hedging language").
-2. "vocabulary_chunks": multi-word idiomatic chunks, collocations or phrasal verbs used by the student.
-3. "is_spontaneous": true ONLY if the student used the structure autonomously, and did NOT merely parrot words that the agent said in the previous turn.
-4. "confidence": float between 0.0 and 1.0 indicating how accurately and appropriately the student applied the structure in context.
+1. "structures": grammatical patterns or connectors appropriately aligned with this level.
+2. "vocabulary_chunks": multi-word idiomatic chunks, collocations, or phrasal verbs dynamically scaled to this level.
+3. "is_spontaneous": true ONLY if the student produced the structure autonomously, without merely echoing or parroting what the agent said in the previous turn.
+4. "confidence": float between 0.0 and 1.0 indicating contextual accuracy.
 
 Return ONLY a valid JSON object matching this schema:
 {

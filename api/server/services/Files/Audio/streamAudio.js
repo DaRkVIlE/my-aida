@@ -19,6 +19,16 @@ function getRandomVoiceId(voiceIds) {
 }
 
 /**
+ * Removes emojis and visual symbols so TTS engines do not pronounce emoji names out loud.
+ * @param {string} str
+ * @returns {string}
+ */
+const stripEmojis = (str) =>
+  typeof str === 'string'
+    ? str.replace(/[\u{1F600}-\u{1F64F}\u{1F300}-\u{1F5FF}\u{1F680}-\u{1F6FF}\u{1F1E0}-\u{1F1FF}\u{2600}-\u{26FF}\u{2700}-\u{27BF}\u{1F900}-\u{1F9FF}\u{1F018}-\u{1F270}\u{238C}-\u{2454}\u{20D0}-\u{20FF}\u{FE0F}]/gu, '').replace(/\s+/g, ' ')
+    : str;
+
+/**
  * @typedef {Object} VoiceSettings
  * @property {number} similarity_boost
  * @property {number} stability
@@ -118,14 +128,17 @@ function createChunkProcessor(user, messageId) {
       const separatorIndex = findLastSeparatorIndex(remainingText);
       if (separatorIndex !== -1) {
         const chunkText = remainingText.slice(0, separatorIndex + 1);
-        chunks.push({ text: chunkText, isFinished: false });
+        const cleanChunk = stripEmojis(chunkText).trim();
+        chunks.push({ text: cleanChunk || chunkText, isFinished: false });
         processedText += chunkText;
       } else {
-        chunks.push({ text: remainingText, isFinished: false });
+        const cleanRemaining = stripEmojis(remainingText).trim();
+        chunks.push({ text: cleanRemaining || remainingText, isFinished: false });
         processedText = text;
       }
     } else if (complete && remainingText.trim().length > 0) {
-      chunks.push({ text: remainingText.trim(), isFinished: true });
+      const cleanRemaining = stripEmojis(remainingText.trim()).trim();
+      chunks.push({ text: cleanRemaining || remainingText.trim(), isFinished: true });
       processedText = text;
     }
 

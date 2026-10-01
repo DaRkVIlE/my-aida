@@ -1,4 +1,4 @@
-﻿# MANA 3.0 — Método de Aquisição Natural Acelerada + Gamified AI
+# MANA 3.0 — Método de Aquisição Natural Acelerada + Gamified AI
 ## Product Requirements Document (PRD) & Game Design Document (GDD)
 
 **Versão:** 3.0 (Definitive)  
@@ -70,6 +70,27 @@ Antes de qualquer interação com a AIDA ou triagem de calibração, o aluno pas
 - **O Erro como Hipótese Biológica:** Redução imediata do filtro afetivo de Krashen; normalização absoluta do erro.
 - **O Alinhamento com a AIDA:** Esclarecer por que a IA não corrige explicitamente (recasting orgânico) e por que não traduz para o português.
 - **O Pacto do Jogador:** O aluno assume o compromisso de se autorizar a falar errado, evitar tradutores e manter consistência diária. Isso zera a ansiedade e torna a **Triagem de Calibração de Rank 10x mais precisa e fluida**.
+
+### 2.5 O Horizonte dos 6 a 8 Meses: Autonomia Comunicativa Real
+- **A Meta Central:** O método MANA é desenhado para levar o aluno da inércia ou do travamento à **comunicação autônoma real em 6 a 8 meses** (15 minutos diários de sparring com a AIDA + Mentorias Estratégicas ao vivo com Gabe).
+- **A Lapidação Contínua (Mês 8 em diante):** Atingido o Cume B2, o aluno entra na fase de refinamento soberano (C1/C2), trabalhando ritmo nativo (*stress-timed*), humor, ironia e diplomacia executiva.
+- **Contraste com o Modelo Tradicional:** Cursos convencionais projetam jornadas de 4 a 5 anos com módulos infinitos para maximizar a retenção financeira. O MANA foca em autonomia rápida e finita.
+
+### 2.6 Ancoragem Semiótica com Emojis Visuais & Higienização de Voz (TTS)
+- **A Fusão Semiótica (Inferência Imediata):** Para permitir que o aluno decifre mensagens em inglês sem recorrer ao português ou a dicionários, a AIDA ancora ativamente substantivos, ações e emoções com **emojis contextuais expressivos** (ex: ☕ 🏃‍♂️ ✈️ 💼 ⏰ 🔥 👀 🤝 🌧️ 🍔 🚕 💻).
+- **Higienização de Áudio:** O motor de síntese de voz (TTS) higieniza a cadeia de texto antes de sintetizar áudio via regex (`stripEmojis`), garantindo que o sintetizador vocal nunca pronuncie nomes de emojis em voz alta ("smiling face", "coffee"), emitindo apenas a pronúncia límpida em inglês britânico/americano, enquanto a interface visual exibe todos os emojis para suporte à compreensão leitora.
+
+### 2.7 Reconhecimento Oral Bidirecional (Whisper STT + Google TTS)
+- **Prática de Listening com Google TTS:** O aluno ouve cada réplica da AIDA com pronúncia nativa e ritmo natural (suporte integrado a Web Speech API com Google US English e endpoints de áudio).
+- **Prática de Speaking com Whisper:** O aluno pode responder utilizando o microfone. O motor **Whisper** (via Groq / OpenAI) transcreve a fala com altíssima fidelidade e baixíssima latência (< 300ms), transformando o chat em uma experiência de diálogo oral dinâmico.
+
+### 2.8 Chunks Linguísticos Dinâmicos e Elásticos por Nível
+- Em vez de uma tabela estática rígida e truncada de vocabulário, o motor **Acquisition Engine** analisa e extrai chunks de forma adaptativa conforme o nível diagnosticado (`P1_zero` até `P5_soberania_c1`):
+  - *P1 (Beginner):* Chunks nucleares de 1-2 palavras (ex: "grab coffee", "to go").
+  - *P2 (Elementary):* Expressões funcionais cotidianas e conectores simples.
+  - *P3 (Intermediate):* Colocações conversacionais e marcadores discursivos naturais.
+  - *P4 (Upper-Intermediate):* Padrões CALP de negociação executiva e persuasão.
+  - *P5 (Mastery):* Retórica avançada, sutileza idiomática e figuras de linguagem.
 
 ---
 
@@ -175,13 +196,18 @@ A cada duas semanas, o aluno desbloqueia uma **Boss Raid**:
 
 ---
 
-## 6. Topo de Funil: A VSL Subliminar Gamificada (Landing Page)
-A Landing Page atua como um cavalo de troia pedagógico: educa o lead sobre a armadilha do modelo tradicional de ensino e aplica um auto-diagnóstico em 2 etapas:
-1. **O Teste do Espelho Mental:** Identifica em qual dos 4 estados de dor o aluno se encontra (Iniciante sobrecarregado, Travado clássico, Intermediário infantilizado ou Praticante em platô).
+## 6. Topo de Funil & Calibração Pré-Chat (< 5 Minutos)
+A Landing Page atua como um portal de despertar pedagógico: educa o aluno sobre a armadilha do modelo tradicional de ensino, apresenta o horizonte claro de **6 a 8 meses para autonomia real**, e aplica uma **Calibração Cognitiva Pré-Chat** interativa para blindar o aluno de qualquer frustração logo no primeiro minuto de chat:
+1. **O Teste do Espelho Mental:** Identifica em qual dos 4 estados de dor o aluno se encontra (insegurança com leitura vs fala, lentidão para formular frases, vergonha corporativa ou platô intermediário).
 2. **Auto-Avaliação em 5 Perfis:**
-   - *Perfil 1 (A1 - Zero Absoluto)*
-   - *Perfil 2 (A2 - Básico Traumatizado)*
-   - *Perfil 3 (B1 - Intermediário Bloqueado)*
-   - *Perfil 4 (B2 - Profissional em Lapidação / Refinamento de Nicho)*
-   - *Perfil 5 (C1/C2 - Soberania e Alta Performance)*
-Ao finalizar, o lead é conduzido organicamente para o ambiente de imersão da AIDA e para a mentoria com Gabe.
+   - *Perfil 1 (P1 - Zero Absoluto)*
+   - *Perfil 2 (P2 - Básico Traumatizado)*
+   - *Perfil 3 (P3 - Intermediário Bloqueado)*
+   - *Perfil 4 (P4 - Profissional em Lapidação)*
+   - *Perfil 5 (P5 - Soberania e Alta Performance)*
+3. **Micro-Desafio de Reflexo Visual:** 3 cenários rápidos ancorados em emojis (café matinal, mala sumida no aeroporto, reunião de negócios) medindo a velocidade de inferência contextual sem tradução.
+4. **Calibração Imediata de Dificuldade:**
+   - Atribui o **Rank Inicial** (`E`, `D` ou `C`).
+   - Calibra o **Modo de Dificuldade da AIDA** (`BABY MODE 👶`, `GENTLE IMMERSION 🌿`, `BICS FLUIDITY ⚡`, `CALP & EXECUTIVE 💼` ou `SOVEREIGN REFINEMENT 👑`), garantindo que o primeiro contato seja acolhedor e perfeitamente ajustado ao filtro afetivo do aluno.
+   - Recomenda a **Companion Ideal** (Jordan, Alexandra, Miles, Zack ou Hayes).
+   - Conduz o aluno diretamente ao Hub já calibrado.
