@@ -64,7 +64,7 @@ modelSpecs:
       description: "Conversas casuais, cultura pop, séries e dia a dia americano"
       iconURL: "https://em-content.zobj.net/source/apple/391/clapper-board_1f3ac.png"
       preset:
-        endpoint: "AIDA (Tutor Imersivo)"
+        endpoint: "aida"
         model: "llama-3.3-70b-versatile"
         temperature: 0.85
         maxOutputTokens: 1200
@@ -168,7 +168,7 @@ modelSpecs:
       description: "Reuniões, apresentações, negociações e e-mails profissionais"
       iconURL: "https://em-content.zobj.net/source/apple/391/briefcase_1f4bc.png"
       preset:
-        endpoint: "AIDA (Tutor Imersivo)"
+        endpoint: "aida"
         model: "llama-3.3-70b-versatile"
         temperature: 0.65
         maxOutputTokens: 1200
@@ -268,7 +268,7 @@ modelSpecs:
       description: "Aeroportos, hotéis, restaurantes e situações práticas no exterior"
       iconURL: "https://em-content.zobj.net/source/apple/391/airplane_2708-fe0f.png"
       preset:
-        endpoint: "AIDA (Tutor Imersivo)"
+        endpoint: "aida"
         model: "llama-3.3-70b-versatile"
         temperature: 0.75
         maxOutputTokens: 1200
@@ -364,7 +364,7 @@ modelSpecs:
       description: "E-sports, streaming, cultura gamer e internet em inglês"
       iconURL: "https://em-content.zobj.net/source/apple/391/video-game_1f3ae.png"
       preset:
-        endpoint: "AIDA (Tutor Imersivo)"
+        endpoint: "aida"
         model: "llama-3.3-70b-versatile"
         temperature: 0.9
         maxOutputTokens: 1200
@@ -460,7 +460,7 @@ modelSpecs:
       description: "Vocabulário avançado, expressões idiomáticas e fluência conversacional"
       iconURL: "https://em-content.zobj.net/source/apple/391/books_1f4da.png"
       preset:
-        endpoint: "AIDA (Tutor Imersivo)"
+        endpoint: "aida"
         model: "llama-3.3-70b-versatile"
         temperature: 0.6
         maxOutputTokens: 1400
@@ -559,7 +559,7 @@ modelSpecs:
 # ── Endpoints: Groq via AIDA custom endpoint ──────────────────────────────────
 endpoints:
   custom:
-    - name: "AIDA (Tutor Imersivo)"
+    - name: "aida"
       apiKey: "dummy"
       baseURL: "https://api.portkey.ai/v1"
       headers:
@@ -575,4 +575,4 @@ endpoints:
       titleModel: "llama-3.3-70b-versatile"
       summarize: false
       forcePrompt: false
-      modelDisplayLabel: "AIDA"
+      modelDisplayLabel: "AIDA (Tutor Imersivo)"
