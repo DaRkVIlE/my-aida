@@ -60,7 +60,7 @@ if (fs.existsSync(assetsDir)) {\
       content = content.replace(/contact@librechat\.ai/g, 'contato@experiasolutions.com.br');\
       content = content.replace(/\"LibreChat\"/g, '\"AIDA\"');\
       content = content.replace(/'LibreChat'/g, \"'AIDA'\");\
-      content = content.replace(/`LibreChat`/g, '`AIDA`');\
+      content = content.replace(/\x60LibreChat\x60/g, '\x60AIDA\x60');\
       content = content.replace(/>LibreChat</g, '>AIDA<');\
       fs.writeFileSync(filePath, content);\
     }\
