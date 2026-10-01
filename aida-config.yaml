@@ -9,6 +9,8 @@ interface:
   agents:
     use: true
     create: true
+  customFooter: "[AIDA](https://aida.experiasolutions.com.br) — Imersão Ativa em Inglês com IA"
+  helpAndFaqURL: "https://experiasolutions.com.br"
   privacyPolicy:
     externalUrl: "https://experiasolutions.com.br"
     openNewTab: true

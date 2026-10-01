@@ -111,14 +111,14 @@
   },
   "repository": {
     "type": "git",
-    "url": "git+https://github.com/danny-avila/LibreChat.git"
+    "url": "git+https://github.com/experiasolutions/my-aida-agents-hub.git"
   },
-  "author": "",
+  "author": "Gabriel Ferreira / Experia Solutions",
   "license": "ISC",
   "bugs": {
-    "url": "https://github.com/danny-avila/LibreChat/issues"
+    "url": "https://experiasolutions.com.br"
   },
-  "homepage": "https://librechat.ai/",
+  "homepage": "https://aida.experiasolutions.com.br",
   "devDependencies": {
     "@axe-core/playwright": "^4.10.1",
     "@eslint/compat": "^1.2.6",

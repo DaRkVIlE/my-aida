@@ -1,8 +1,8 @@
-# LibreChat
+# AIDA Agents Hub
 
 ## Project Overview
 
-LibreChat is a monorepo with the following key workspaces:
+AIDA Agents Hub is a customized monorepo (based on the LibreChat open-source engine) configured for immersive AI-powered English tutoring. The following key workspaces make up the project:
 
 | Workspace | Language | Side | Dependency | Purpose |
 |---|---|---|---|---|
@@ -13,7 +13,7 @@ LibreChat is a monorepo with the following key workspaces:
 | `/client` | TypeScript/React | Frontend | `packages/data-provider`, `packages/client` | Frontend SPA |
 | `/packages/client` | TypeScript | Frontend | `packages/data-provider` | Shared frontend utilities |
 
-The source code for `@librechat/agents` (major backend dependency, same team) is at `/home/danny/agentus`.
+> **Note:** Internal package imports (`@librechat/agents`, `@librechat/data-schemas`, etc.) are upstream dependency names — they are preserved for build compatibility.
 
 ---
 
