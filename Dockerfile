@@ -4,25 +4,16 @@ FROM ghcr.io/danny-avila/librechat-dev:latest
 COPY aida-config.yaml /app/librechat.yaml
 
 # Copia o backend customizado (rotas MANA, Gamification models, manaAcquisition)
+# JS puro — não precisa de etapa de build
 COPY api/ /app/api/
 
-# Copia o frontend customizado (MANA components, hooks, rotas, LandingPageVSL)
-COPY client/ /app/client/
-
-# Substitui as logos do LibreChat e branding pela AIDA nos fontes públicos
+# Substitui as logos da AIDA nos assets públicos e no dist pré-compilado
 COPY aida-logo.svg /app/client/public/assets/logo.svg
-COPY client/public/assets/aida-og.png /app/client/public/assets/aida-og.png
-
-# Reconstrói o frontend Vite com as novidades e rotas do MANA 3.0
-WORKDIR /app/client
-RUN npm run build
-WORKDIR /app
-
-# Assegura a logo e banner da AIDA no dist gerado
 COPY aida-logo.svg /app/client/dist/assets/logo.svg
 COPY client/public/assets/aida-og.png /app/client/dist/assets/aida-og.png
+COPY client/public/assets/aida-og.png /app/client/public/assets/aida-og.png
 
-# Injeta o branding no index.html e recria o PWA Manifest
+# Injeta o branding no index.html PRÉ-COMPILADO e recria o PWA Manifest
 RUN node -e "\
 const fs = require('fs');\
 const path = '/app/client/dist/index.html';\
@@ -62,12 +53,12 @@ if (fs.existsSync(assetsDir)) {\
     if (file.endsWith('.js') || file.endsWith('.html') || file.endsWith('.json')) {\
       const filePath = assetsDir + '/' + file;\
       let content = fs.readFileSync(filePath, 'utf8');\
-      content = content.replace(/https:\\/\\/www\\.librechat\\.ai/g, 'https://aida.experiasolutions.com.br');\
-      content = content.replace(/https:\\/\\/librechat\\.ai/g, 'https://aida.experiasolutions.com.br');\
-      content = content.replace(/https:\\/\\/github\\.com\\/danny-avila\\/LibreChat/g, 'https://experiasolutions.com.br');\
-      content = content.replace(/noreply@librechat\\.ai/g, 'noreply@experiasolutions.com.br');\
-      content = content.replace(/contact@librechat\\.ai/g, 'contato@experiasolutions.com.br');\
-      content = content.replace(/\\\"LibreChat\\\"/g, '\\\"AIDA\\\"');\
+      content = content.replace(/https:\/\/www\.librechat\.ai/g, 'https://aida.experiasolutions.com.br');\
+      content = content.replace(/https:\/\/librechat\.ai/g, 'https://aida.experiasolutions.com.br');\
+      content = content.replace(/https:\/\/github\.com\/danny-avila\/LibreChat/g, 'https://experiasolutions.com.br');\
+      content = content.replace(/noreply@librechat\.ai/g, 'noreply@experiasolutions.com.br');\
+      content = content.replace(/contact@librechat\.ai/g, 'contato@experiasolutions.com.br');\
+      content = content.replace(/\"LibreChat\"/g, '\"AIDA\"');\
       content = content.replace(/'LibreChat'/g, \"'AIDA'\");\
       content = content.replace(/`LibreChat`/g, '`AIDA`');\
       content = content.replace(/>LibreChat</g, '>AIDA<');\
@@ -93,4 +84,3 @@ ENV CUSTOM_FOOTER="[AIDA](https://aida.experiasolutions.com.br) — Imersão Ati
 EXPOSE 8080
 
 CMD ["npm", "run", "backend"]
-
