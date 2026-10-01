@@ -549,8 +549,11 @@ modelSpecs:
 endpoints:
   custom:
     - name: "AIDA (Tutor Imersivo)"
-      apiKey: "${GROQ_API_KEY}"
-      baseURL: "https://api.groq.com/openai/v1"
+      apiKey: "dummy"
+      baseURL: "https://api.portkey.ai/v1"
+      headers:
+        x-portkey-api-key: "${PORTKEY_API_KEY}"
+        x-portkey-config: "${PORTKEY_CONFIG_ID}"
       models:
         default: [
           "llama-3.3-70b-versatile"
