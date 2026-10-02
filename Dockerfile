@@ -24,7 +24,7 @@ html = html.replace(/assets\/favicon-32x32\.png/g, 'assets/logo.svg');\
 html = html.replace(/assets\/favicon-16x16\.png/g, 'assets/logo.svg');\
 html = html.replace(/assets\/apple-touch-icon-180x180\.png/g, 'assets/logo.svg');\
 html = html.replace(/type=\"image\/png\"/g, 'type=\"image/svg+xml\"');\
-const ogTags = \`<meta property=\"og:title\" content=\"AIDA — Aprenda Inglês por Imersão Ativa\" />\n    <meta property=\"og:image\" content=\"https://aida.experiasolutions.com.br/assets/aida-og.png\" />\n    <meta property=\"og:description\" content=\"Converse com tutores de IA especializados e aprenda inglês do jeito que o cérebro foi feito para aprender — por imersão.\" />\n    <meta name=\"twitter:card\" content=\"summary_large_image\" />\n    <meta name=\"twitter:image\" content=\"https://aida.experiasolutions.com.br/assets/aida-og.png\" />\n\`;\
+const ogTags = '<meta property=\"og:title\" content=\"AIDA — Aprenda Inglês por Imersão Ativa\" />\\n<meta property=\"og:image\" content=\"https://aida.experiasolutions.com.br/assets/aida-og.png\" />\\n<meta property=\"og:description\" content=\"Converse com tutores de IA especializados e aprenda inglês do jeito que o cérebro foi feito para aprender — por imersão.\" />\\n<meta name=\"twitter:card\" content=\"summary_large_image\" />\\n<meta name=\"twitter:image\" content=\"https://aida.experiasolutions.com.br/assets/aida-og.png\" />\\n';\
 html = html.replace('</head>', ogTags + '</head>');\
 fs.writeFileSync(path, html);\
 \
