@@ -131,27 +131,30 @@ function enhanceHtmlWithAida(html) {
         display: none;
         align-items: center;
         gap: 8px;
-        background: rgba(15, 15, 22, 0.85);
-        backdrop-filter: blur(12px);
-        -webkit-backdrop-filter: blur(12px);
-        border: 1px solid rgba(139, 92, 246, 0.4);
+        background: rgba(13, 13, 20, 0.88);
+        backdrop-filter: blur(14px);
+        -webkit-backdrop-filter: blur(14px);
+        border: 1px solid rgba(139, 92, 246, 0.45);
         border-radius: 9999px;
-        padding: 5px 14px;
+        padding: 5px 12px;
         color: #f3f4f6;
         font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
         font-size: 12px;
         font-weight: 600;
-        box-shadow: 0 4px 18px rgba(0, 0, 0, 0.45), 0 0 10px rgba(139, 92, 246, 0.25);
+        box-shadow: 0 4px 20px rgba(0, 0, 0, 0.5), 0 0 12px rgba(139, 92, 246, 0.25);
         user-select: none;
-        pointer-events: auto;
+        cursor: pointer;
+        transition: all 0.25s ease;
       }
       #aida-mana-hud:hover {
-        border-color: rgba(139, 92, 246, 0.8);
+        border-color: rgba(139, 92, 246, 0.9);
+        transform: translateY(-1px);
+        box-shadow: 0 6px 24px rgba(0, 0, 0, 0.6), 0 0 16px rgba(139, 92, 246, 0.4);
       }
       .mana-badge-rank {
         background: linear-gradient(135deg, #8b5cf6, #ec4899);
         color: #fff;
-        padding: 2px 8px;
+        padding: 2px 7px;
         border-radius: 9999px;
         font-size: 10px;
         font-weight: 800;
@@ -162,8 +165,143 @@ function enhanceHtmlWithAida(html) {
         align-items: center;
         gap: 3px;
       }
+      .mana-badge-mana { color: #38bdf8; font-weight: 700; }
       .mana-badge-xp { color: #34d399; }
       .mana-badge-streak { color: #fb923c; }
+      .mana-cockpit-btn {
+        background: rgba(139, 92, 246, 0.25);
+        border: 1px solid rgba(139, 92, 246, 0.5);
+        color: #c084fc;
+        padding: 2px 8px;
+        border-radius: 9999px;
+        font-size: 11px;
+        font-weight: 700;
+        margin-left: 2px;
+      }
+
+      /* Slide-over Master Cockpit Drawer */
+      #aida-cockpit-backdrop {
+        position: fixed;
+        inset: 0;
+        background: rgba(0, 0, 0, 0.65);
+        backdrop-filter: blur(4px);
+        -webkit-backdrop-filter: blur(4px);
+        z-index: 100000;
+        display: none;
+        opacity: 0;
+        transition: opacity 0.3s ease;
+      }
+      #aida-cockpit-drawer {
+        position: fixed;
+        top: 0;
+        right: -450px;
+        width: 420px;
+        max-width: 90vw;
+        height: 100vh;
+        background: #0b0c10;
+        border-left: 1px solid rgba(139, 92, 246, 0.4);
+        box-shadow: -10px 0 40px rgba(0, 0, 0, 0.8);
+        z-index: 100001;
+        display: flex;
+        flex-direction: column;
+        overflow-y: auto;
+        font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+        color: #e2e8f0;
+        transition: right 0.35s cubic-bezier(0.16, 1, 0.3, 1);
+      }
+      #aida-cockpit-drawer.open { right: 0; }
+      #aida-cockpit-backdrop.open { display: block; opacity: 1; }
+
+      .cockpit-header {
+        padding: 20px;
+        background: linear-gradient(180deg, rgba(24, 20, 37, 0.95), rgba(11, 12, 16, 0.8));
+        border-bottom: 1px solid rgba(139, 92, 246, 0.25);
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+      }
+      .cockpit-title { font-size: 16px; font-weight: 800; color: #f8fafc; letter-spacing: 0.5px; }
+      .cockpit-close-btn {
+        background: rgba(255, 255, 255, 0.1);
+        border: none;
+        color: #94a3b8;
+        width: 28px;
+        height: 28px;
+        border-radius: 50%;
+        cursor: pointer;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        font-size: 14px;
+      }
+      .cockpit-close-btn:hover { background: rgba(255, 255, 255, 0.2); color: #fff; }
+
+      .cockpit-body { padding: 20px; display: flex; flex-direction: column; gap: 20px; }
+      
+      .cockpit-card {
+        background: rgba(18, 19, 26, 0.7);
+        border: 1px solid rgba(255, 255, 255, 0.08);
+        border-radius: 14px;
+        padding: 16px;
+      }
+      .cockpit-card-title {
+        font-size: 13px;
+        font-weight: 700;
+        text-transform: uppercase;
+        letter-spacing: 0.7px;
+        color: #94a3b8;
+        margin-bottom: 12px;
+        display: flex;
+        align-items: center;
+        gap: 6px;
+      }
+
+      /* Portais */
+      .portal-item {
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        padding: 10px 12px;
+        border-radius: 10px;
+        background: rgba(255, 255, 255, 0.03);
+        margin-bottom: 8px;
+        border: 1px solid transparent;
+      }
+      .portal-item.active {
+        background: rgba(139, 92, 246, 0.15);
+        border-color: rgba(139, 92, 246, 0.4);
+      }
+      .portal-info { display: flex; align-items: center; gap: 8px; font-size: 13px; font-weight: 600; }
+      .portal-tag { font-size: 10px; font-weight: 700; padding: 2px 6px; border-radius: 6px; }
+      .portal-tag-free { background: rgba(52, 211, 153, 0.2); color: #34d399; }
+      .portal-tag-pro { background: rgba(139, 92, 246, 0.2); color: #c084fc; }
+
+      /* WhatsApp Alpha Callout */
+      .alpha-callout {
+        background: linear-gradient(135deg, rgba(16, 185, 129, 0.15), rgba(139, 92, 246, 0.15));
+        border: 1px solid rgba(16, 185, 129, 0.35);
+        border-radius: 14px;
+        padding: 18px;
+        text-align: center;
+      }
+      .alpha-callout p { font-size: 13px; line-height: 1.5; color: #cbd5e1; margin-bottom: 12px; }
+      .alpha-wa-btn {
+        display: inline-flex;
+        align-items: center;
+        justify-content: center;
+        gap: 6px;
+        width: 100%;
+        background: #10b981;
+        color: #fff;
+        padding: 10px 16px;
+        border-radius: 10px;
+        font-size: 13px;
+        font-weight: 700;
+        text-decoration: none;
+        transition: background 0.2s;
+      }
+      .alpha-wa-btn:hover { background: #059669; }
+
       @media (max-width: 640px) {
         #aida-mana-hud {
           top: auto;
@@ -174,11 +312,104 @@ function enhanceHtmlWithAida(html) {
         }
       }
     </style>
-    <div id="aida-mana-hud">
+
+    <!-- Header HUD Flutuante -->
+    <div id="aida-mana-hud" onclick="toggleAidaCockpit()">
+      <span class="mana-badge-item mana-badge-mana">💙 <span id="mana-hud-val">100</span></span>
+      <span class="mana-badge-item mana-badge-streak">🔥 <span id="mana-hud-streak">1d</span></span>
       <span class="mana-badge-rank" id="mana-hud-rank">RANK E</span>
       <span class="mana-badge-item mana-badge-xp">⚡ <span id="mana-hud-xp">0 XP</span></span>
-      <span class="mana-badge-item mana-badge-streak">🔥 <span id="mana-hud-streak">1d</span></span>
+      <span class="mana-cockpit-btn">📊 Cockpit</span>
     </div>
+
+    <!-- Backdrop & Master Cockpit Slide-over Drawer -->
+    <div id="aida-cockpit-backdrop" onclick="toggleAidaCockpit()"></div>
+    <div id="aida-cockpit-drawer">
+      <div class="cockpit-header">
+        <div class="cockpit-title">🏰 GABE'S ENGLISH COCKPIT</div>
+        <button class="cockpit-close-btn" onclick="toggleAidaCockpit()">✕</button>
+      </div>
+      <div class="cockpit-body">
+        <!-- Card 1: Energia & Vidas -->
+        <div class="cockpit-card">
+          <div class="cockpit-card-title">💙 Reserva de MANA (Vidas Diárias)</div>
+          <div style="display:flex; justify-content:space-between; font-size:12px; margin-bottom:6px;">
+            <span>Energia para Prática</span>
+            <span style="font-weight:700; color:#38bdf8;" id="drawer-mana-text">100 / 100 MANA</span>
+          </div>
+          <div style="background:rgba(255,255,255,0.1); height:8px; border-radius:9999px; overflow:hidden;">
+            <div id="drawer-mana-bar" style="background:#38bdf8; height:100%; width:100%; transition:width 0.3s ease;"></div>
+          </div>
+          <div style="font-size:11px; color:#94a3b8; margin-top:8px;">
+            💡 <strong>Dica MANA:</strong> Responda 100% em inglês sem pedir tradução para ativar <em>Pure Run</em> (+5 MANA e +50% XP bônus)!
+          </div>
+        </div>
+
+        <!-- Card 2: Montanha B2 (Os 5 Portais) -->
+        <div class="cockpit-card">
+          <div class="cockpit-card-title">🏔️ Os 5 Portais de Fluência (Montanha B2)</div>
+          
+          <div class="portal-item active">
+            <div class="portal-info">🎬 <span>Portal 1: Descongelamento (A1→A2)</span></div>
+            <span class="portal-tag portal-tag-free">Jordan • Livre</span>
+          </div>
+          
+          <div class="portal-item">
+            <div class="portal-info">✈️ <span>Portal 2: Motor BICS (A2→B1)</span></div>
+            <span class="portal-tag portal-tag-pro">Miles • Pro</span>
+          </div>
+
+          <div class="portal-item active">
+            <div class="portal-info">🎮 <span>Portal 3: Tração Conversacional (B1→B2)</span></div>
+            <span class="portal-tag portal-tag-free">Zack • Livre</span>
+          </div>
+
+          <div class="portal-item">
+            <div class="portal-info">👔 <span>Portal 4: Fronteira Executiva (B2 Pleno)</span></div>
+            <span class="portal-tag portal-tag-pro">Alexandra • Pro</span>
+          </div>
+
+          <div class="portal-item">
+            <div class="portal-info">📚 <span>Portal 5: Trono da Soberania (C1→C2)</span></div>
+            <span class="portal-tag portal-tag-pro">Prof. Hayes • Pro</span>
+          </div>
+        </div>
+
+        <!-- Card 3: Quests Diárias -->
+        <div class="cockpit-card">
+          <div class="cockpit-card-title">🎯 Missões Diárias (Quests)</div>
+          <div style="font-size:12px; display:flex; flex-direction:column; gap:8px;">
+            <div style="display:flex; justify-content:space-between; align-items:center;">
+              <span>☕ Conversar com o Jordan hoje</span>
+              <span style="color:#34d399; font-weight:700;">+15 XP</span>
+            </div>
+            <div style="display:flex; justify-content:space-between; align-items:center;">
+              <span>⚡ Completar uma Pure Run sem socorro em PT</span>
+              <span style="color:#34d399; font-weight:700;">+25 XP</span>
+            </div>
+            <div style="display:flex; justify-content:space-between; align-items:center;">
+              <span>🔥 Manter ofensiva de 2 dias seguidos</span>
+              <span style="color:#fb923c; font-weight:700;">+50 XP</span>
+            </div>
+          </div>
+        </div>
+
+        <!-- Card 4: Turma Alpha do Gabe -->
+        <div class="alpha-callout">
+          <div style="font-size:14px; font-weight:800; color:#10b981; margin-bottom:6px;">🚀 PILOTO ALPHA COM O GABE</div>
+          <p>
+            <em>"A sua boca não fala porque o seu cérebro ainda está traduzindo. O inglês não se estuda com regras — se adquire no reflexo."</em>
+          </p>
+          <p style="font-size:12px;">
+            Acesso a todos os 5 Portais, MANA Ilimitado, voz TTS nativa ultra-rápida e acompanhamento pessoal com Gabe.
+          </p>
+          <a class="alpha-wa-btn" href="https://wa.me/5511999999999?text=Oi%20Gabe!%20Estou%20praticando%20na%20AIDA%20e%20quero%20saber%20como%20funciona%20o%20Piloto%20Alpha%20com%20voc%C3%AA." target="_blank" rel="noreferrer">
+            📲 Entrar na Turma Alpha no WhatsApp
+          </a>
+        </div>
+      </div>
+    </div>
+
     <script>
       (function() {
         function enforceAidaTitle() {
@@ -194,9 +425,26 @@ function enhanceHtmlWithAida(html) {
         }
 
         var hudEl = document.getElementById('aida-mana-hud');
+        var manaEl = document.getElementById('mana-hud-val');
         var xpEl = document.getElementById('mana-hud-xp');
         var rankEl = document.getElementById('mana-hud-rank');
         var streakEl = document.getElementById('mana-hud-streak');
+        var drawerManaText = document.getElementById('drawer-mana-text');
+        var drawerManaBar = document.getElementById('drawer-mana-bar');
+
+        window.toggleAidaCockpit = function() {
+          var drawer = document.getElementById('aida-cockpit-drawer');
+          var backdrop = document.getElementById('aida-cockpit-backdrop');
+          if (!drawer || !backdrop) return;
+          var isOpen = drawer.classList.contains('open');
+          if (isOpen) {
+            drawer.classList.remove('open');
+            backdrop.classList.remove('open');
+          } else {
+            drawer.classList.add('open');
+            backdrop.classList.add('open');
+          }
+        };
 
         function updateManaHud() {
           fetch('/api/user', { credentials: 'include' })
@@ -215,9 +463,14 @@ function enhanceHtmlWithAida(html) {
             .then(function(stats) {
               if (!stats) return;
               if (hudEl) hudEl.style.display = 'inline-flex';
+              var currentMana = typeof stats.currentMana === 'number' ? stats.currentMana : 100;
+              var maxMana = stats.maxMana || 100;
+              if (manaEl) manaEl.textContent = currentMana;
               if (xpEl) xpEl.textContent = (stats.currentXp || 0) + ' XP';
               if (rankEl) rankEl.textContent = 'RANK ' + (stats.playerRank || 'E');
               if (streakEl) streakEl.textContent = (stats.streakDays || 1) + 'd';
+              if (drawerManaText) drawerManaText.textContent = currentMana + ' / ' + maxMana + ' MANA';
+              if (drawerManaBar) drawerManaBar.style.width = Math.min(100, Math.round((currentMana / maxMana) * 100)) + '%';
             })
             .catch(function() {
               if (hudEl) hudEl.style.display = 'none';
@@ -225,7 +478,7 @@ function enhanceHtmlWithAida(html) {
         }
 
         setTimeout(updateManaHud, 1000);
-        setInterval(updateManaHud, 25000);
+        setInterval(updateManaHud, 20000);
       })();
     </script>
   `;
