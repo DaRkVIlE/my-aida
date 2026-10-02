@@ -403,7 +403,7 @@ function enhanceHtmlWithAida(html) {
           <p style="font-size:12px;">
             Acesso a todos os 5 Portais, MANA Ilimitado, voz TTS nativa ultra-rápida e acompanhamento pessoal com Gabe.
           </p>
-          <a class="alpha-wa-btn" href="https://wa.me/5511999999999?text=Oi%20Gabe!%20Estou%20praticando%20na%20AIDA%20e%20quero%20saber%20como%20funciona%20o%20Piloto%20Alpha%20com%20voc%C3%AA." target="_blank" rel="noreferrer">
+          <a class="alpha-wa-btn" href="https://wa.me/5511967239791?text=Oi%20Gabe!%20Estou%20praticando%20na%20AIDA%20e%20quero%20garantir%20uma%20das%20vagas%20do%20Piloto%20Alpha%20com%20voc%C3%AA." target="_blank" rel="noreferrer">
             📲 Entrar na Turma Alpha no WhatsApp
           </a>
         </div>
