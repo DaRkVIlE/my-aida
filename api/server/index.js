@@ -409,6 +409,22 @@ function enhanceHtmlWithAida(html) {
             📲 Entrar na Turma Alpha no WhatsApp
           </a>
         </div>
+
+        <!-- Card 5: Painel do Gabe (Visível apenas para Administrador) -->
+        <div class="cockpit-card" id="gabe-admin-panel" style="display:none; border:1px solid rgba(16, 185, 129, 0.45); background: rgba(16, 185, 129, 0.04);">
+          <div class="cockpit-card-title" style="color:#34d399; display:flex; justify-content:space-between; align-items:center;">
+            <span>👑 PAINEL DO GABE (GESTÃO)</span>
+            <button onclick="refreshStudentsList()" style="background:rgba(16,185,129,0.2); border:1px solid rgba(16,185,129,0.4); color:#34d399; font-size:11px; padding:2px 8px; border-radius:6px; cursor:pointer;">🔄 Atualizar</button>
+          </div>
+          <div style="display:flex; justify-content:space-between; font-size:11px; color:#94a3b8; margin-bottom:12px; padding-bottom:8px; border-bottom:1px solid rgba(255,255,255,0.06);">
+            <span>Alunos: <strong id="admin-total-students" style="color:#fff;">0</strong></span>
+            <span>Alpha Pro: <strong id="admin-pro-students" style="color:#10b981;">0</strong></span>
+            <span>Free: <strong id="admin-free-students" style="color:#fb923c;">0</strong></span>
+          </div>
+          <div id="gabe-students-list" style="max-height:240px; overflow-y:auto; display:flex; flex-direction:column; gap:8px;">
+            <div style="font-size:12px; color:#64748b; text-align:center; padding:12px;">Carregando alunos da turma...</div>
+          </div>
+        </div>
       </div>
     </div>
 
@@ -510,7 +526,77 @@ function enhanceHtmlWithAida(html) {
           } else {
             drawer.classList.add('open');
             backdrop.classList.add('open');
+            if (window._currentUserIsAdmin) {
+              window.refreshStudentsList();
+            }
           }
+        };
+
+        window.refreshStudentsList = function() {
+          var listEl = document.getElementById('gabe-students-list');
+          if (!listEl) return;
+          fetch('/api/mana/students', { credentials: 'include' })
+            .then(function(res) {
+              if (!res.ok) throw new Error('Não autorizado');
+              return res.json();
+            })
+            .then(function(data) {
+              var totalEl = document.getElementById('admin-total-students');
+              var proEl = document.getElementById('admin-pro-students');
+              var freeEl = document.getElementById('admin-free-students');
+              if (totalEl) totalEl.textContent = data.total || 0;
+              if (proEl) proEl.textContent = data.proCount || 0;
+              if (freeEl) freeEl.textContent = data.freeCount || 0;
+
+              if (!data.students || data.students.length === 0) {
+                listEl.innerHTML = '<div style="font-size:12px; color:#64748b; text-align:center; padding:10px;">Nenhum aluno cadastrado ainda.</div>';
+                return;
+              }
+
+              listEl.innerHTML = data.students.map(function(s) {
+                var isPro = s.tier === 'pro';
+                var badge = isPro
+                  ? '<span style="background:rgba(16,185,129,0.25); color:#10b981; font-size:10px; font-weight:800; padding:2px 6px; border-radius:4px;">PRO ⭐</span>'
+                  : '<span style="background:rgba(251,146,60,0.2); color:#fb923c; font-size:10px; font-weight:700; padding:2px 6px; border-radius:4px;">FREE</span>';
+
+                var actionBtn = isPro
+                  ? '<button onclick="promoteStudentFromUI(\'' + s.userId + '\', \'free\')" style="background:rgba(255,255,255,0.06); border:1px solid rgba(255,255,255,0.15); color:#94a3b8; font-size:10px; padding:3px 7px; border-radius:6px; cursor:pointer;">Tornar Free</button>'
+                  : '<button onclick="promoteStudentFromUI(\'' + s.userId + '\', \'pro\')" style="background:#10b981; border:none; color:#000; font-weight:800; font-size:10px; padding:3px 8px; border-radius:6px; cursor:pointer; box-shadow:0 0 8px rgba(16,185,129,0.4);">⚡ Virar PRO</button>';
+
+                return [
+                  '<div style="background:rgba(255,255,255,0.03); border:1px solid rgba(255,255,255,0.06); border-radius:8px; padding:8px 10px; display:flex; justify-content:space-between; align-items:center;">',
+                  '  <div style="overflow:hidden; text-overflow:ellipsis; white-space:nowrap; max-width:210px;">',
+                  '    <div style="font-size:12px; font-weight:700; color:#f1f5f9; display:flex; align-items:center; gap:6px;">' + s.name + ' ' + badge + '</div>',
+                  '    <div style="font-size:10px; color:#64748b;">' + (s.email !== 'N/A' ? s.email : s.userId) + ' • ' + (s.currentXp || 0) + ' XP</div>',
+                  '  </div>',
+                  '  <div>' + actionBtn + '</div>',
+                  '</div>'
+                ].join('');
+              }).join('');
+            })
+            .catch(function() {
+              listEl.innerHTML = '<div style="font-size:11px; color:#ef4444; text-align:center; padding:8px;">Erro ao carregar lista de alunos.</div>';
+            });
+        };
+
+        window.promoteStudentFromUI = function(userId, targetTier) {
+          fetch('/api/mana/upgrade', {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            credentials: 'include',
+            body: JSON.stringify({ userId: userId, tier: targetTier })
+          })
+            .then(function(res) { return res.json(); })
+            .then(function(resp) {
+              if (resp.success) {
+                window.refreshStudentsList();
+              } else {
+                alert(resp.error || 'Erro ao alterar tier');
+              }
+            })
+            .catch(function() {
+              alert('Erro de conexão ao alterar aluno');
+            });
         };
 
         function updateManaHud() {
@@ -521,6 +607,16 @@ function enhanceHtmlWithAida(html) {
             })
             .then(function(user) {
               if (!user || !user.id) return;
+              var isAdmin = user.role === 'ADMIN' || user.role === 'admin';
+              window._currentUserIsAdmin = isAdmin;
+              var adminPanel = document.getElementById('gabe-admin-panel');
+              if (adminPanel && isAdmin) {
+                adminPanel.style.display = 'block';
+                if (!window._studentsLoaded) {
+                  window._studentsLoaded = true;
+                  window.refreshStudentsList();
+                }
+              }
               return fetch('/api/mana/profile/' + user.id, { credentials: 'include' });
             })
             .then(function(res) {

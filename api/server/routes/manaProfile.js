@@ -145,10 +145,24 @@ const requireAdminOrKey = async (req, res, next) => {
   }
 
   // Se não foi pela chave, tenta via JWT autenticado
-  requireJwtAuth(req, res, () => {
-    if (req.user && (req.user.role === 'ADMIN' || req.user.role === 'admin')) {
+  requireJwtAuth(req, res, async () => {
+    if (!req.user) {
+      return res.status(401).json({ error: 'Não autenticado' });
+    }
+
+    let role = req.user.role;
+    if (!role && req.user.id) {
+      const User = require('mongoose').models.User;
+      if (User) {
+        const u = await User.findById(req.user.id).select('role').lean();
+        role = u?.role;
+      }
+    }
+
+    if (role === 'ADMIN' || role === 'admin') {
       return next();
     }
+
     return res.status(403).json({ error: 'Acesso negado. Apenas o administrador (Gabe) pode gerenciar alunos.' });
   });
 };
@@ -216,28 +230,39 @@ router.post('/upgrade', requireAdminOrKey, async (req, res) => {
 
 /**
  * GET /api/mana/students
- * Retorna a lista de alunos com status da jornada MANA 3.0, tier e progresso
+ * Retorna a lista de todos os alunos cadastrados com status da jornada MANA 3.0 e tier
  */
 router.get('/students', requireAdminOrKey, async (req, res) => {
   try {
-    const studentsStats = await Gamification.find()
-      .populate('user', 'name username email role createdAt')
-      .sort({ updatedAt: -1 })
-      .lean();
+    const User = require('mongoose').models.User;
+    let users = [];
+    if (User) {
+      users = await User.find().select('name username email role createdAt').sort({ createdAt: -1 }).lean();
+    }
 
-    const result = studentsStats.map((st) => ({
-      userId: st.user?._id || st.user,
-      name: st.user?.name || st.user?.username || 'Aluno',
-      email: st.user?.email || 'N/A',
-      tier: st.tier || 'free',
-      playerRank: st.playerRank || 'E',
-      currentXp: st.currentXp || 0,
-      currentMana: st.tier === 'pro' ? '∞' : (st.currentMana ?? 100),
-      streakDays: st.streakDays || 0,
-      totalPureRuns: st.totalPureRuns || 0,
-      lastActiveDate: st.lastActiveDate,
-      joinedAt: st.user?.createdAt,
-    }));
+    const userIds = users.map((u) => u._id);
+    const statsList = await Gamification.find({ user: { $in: userIds } }).lean();
+    const statsMap = new Map();
+    statsList.forEach((s) => statsMap.set(String(s.user), s));
+
+    const result = users.map((u) => {
+      const st = statsMap.get(String(u._id)) || {};
+      const isPro = st.tier === 'pro';
+      return {
+        userId: u._id,
+        name: u.name || u.username || 'Aluno',
+        email: u.email || 'N/A',
+        role: u.role || 'USER',
+        tier: st.tier || 'free',
+        playerRank: st.playerRank || 'E',
+        currentXp: st.currentXp || 0,
+        currentMana: isPro ? '∞' : (st.currentMana ?? 100),
+        streakDays: st.streakDays || 0,
+        totalPureRuns: st.totalPureRuns || 0,
+        lastActiveDate: st.lastActiveDate || null,
+        joinedAt: u.createdAt,
+      };
+    });
 
     res.json({
       total: result.length,
