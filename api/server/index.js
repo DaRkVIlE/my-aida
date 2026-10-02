@@ -90,6 +90,8 @@ function enhanceHtmlWithAida(html) {
     return html;
   }
 
+  const gabeWhatsAppNumber = process.env.GABE_WHATSAPP_NUMBER || '5511967239791';
+
   // 1. Forçar título canônico da AIDA
   html = html.replace(/<title>[\s\S]*?<\/title>/gi, '<title>AIDA — Aprenda Inglês por Imersão Ativa</title>');
 
@@ -403,7 +405,7 @@ function enhanceHtmlWithAida(html) {
           <p style="font-size:12px;">
             Acesso a todos os 5 Portais, MANA Ilimitado, voz TTS nativa ultra-rápida e acompanhamento pessoal com Gabe.
           </p>
-          <a class="alpha-wa-btn" href="https://wa.me/5511967239791?text=Oi%20Gabe!%20Estou%20praticando%20na%20AIDA%20e%20quero%20garantir%20uma%20das%20vagas%20do%20Piloto%20Alpha%20com%20voc%C3%AA." target="_blank" rel="noreferrer">
+          <a class="alpha-wa-btn" href="https://wa.me/${gabeWhatsAppNumber}?text=Oi%20Gabe!%20Estou%20praticando%20na%20AIDA%20e%20quero%20garantir%20uma%20das%20vagas%20do%20Piloto%20Alpha%20com%20voc%C3%AA." target="_blank" rel="noreferrer">
             📲 Entrar na Turma Alpha no WhatsApp
           </a>
         </div>
@@ -446,7 +448,7 @@ function enhanceHtmlWithAida(html) {
             'padding:20px;animation:fadeInAida 0.3s ease;'
           ].join('');
 
-          var waLink = data.upgradeLink || 'https://wa.me/5511999999999';
+          var waLink = data.upgradeLink || 'https://wa.me/${gabeWhatsAppNumber}?text=' + encodeURIComponent('Oi Gabe! Meu MANA acabou na AIDA e quero saber como entrar na Turma Alpha! 💙');
           var refill = data.refillAt || 'Meia-noite UTC';
 
           manaModal.innerHTML = [
@@ -559,7 +561,7 @@ function enhanceHtmlWithAida(html) {
               // Mostrar modal automaticamente se já zerou
               if (!isPro && manaNum <= 0) {
                 showManaDepletedModal({
-                  upgradeLink: 'https://wa.me/5511999999999',
+                  upgradeLink: 'https://wa.me/${gabeWhatsAppNumber}?text=' + encodeURIComponent('Oi Gabe! Meu MANA acabou na AIDA e quero saber como entrar na Turma Alpha! 💙'),
                   refillAt: 'Meia-noite UTC'
                 });
               }
