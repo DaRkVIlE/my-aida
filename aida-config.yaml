@@ -3,12 +3,12 @@ cache: true
 
 # ── Interface: Zero-config para o aluno ───────────────────────────────────────
 interface:
-  modelSelect: false        # Oculta dropdown de modelos
+  modelSelect: true         # Exibe as 5 personas da AIDA no seletor nativo do topo
   presets: false            # Oculta presets técnicos
   parameters: false         # Oculta temperatura, max_tokens etc.
   agents:
-    use: true
-    create: true
+    use: false              # Desativa aba técnica de Agents
+    create: false
   customFooter: "[AIDA](https://aida.experiasolutions.com.br) — Imersão Ativa em Inglês com IA"
   helpAndFaqURL: "https://experiasolutions.com.br"
   privacyPolicy:
