@@ -92,6 +92,9 @@ function buildPreLoginPayload() {
       !!process.env.EMAIL_PASSWORD &&
       !!process.env.EMAIL_FROM,
     passwordResetEnabled,
+    customFooter:
+      process.env.CUSTOM_FOOTER ||
+      '[AIDA](https://aida.experiasolutions.com.br) — Imersão Ativa em Inglês com IA',
   };
 
   const minPasswordLength = parseInt(process.env.MIN_PASSWORD_LENGTH, 10);
@@ -117,11 +120,10 @@ function buildPublicSharePayload() {
   /** @type {Partial<TStartupConfig>} */
   const payload = {
     analyticsGtmId: process.env.ANALYTICS_GTM_ID,
+    customFooter:
+      process.env.CUSTOM_FOOTER ||
+      '[AIDA](https://aida.experiasolutions.com.br) — Imersão Ativa em Inglês com IA',
   };
-
-  if (typeof process.env.CUSTOM_FOOTER === 'string') {
-    payload.customFooter = process.env.CUSTOM_FOOTER;
-  }
 
   return payload;
 }
@@ -140,6 +142,9 @@ function buildPostLoginPayload() {
       isEnabled(process.env.SHOW_BIRTHDAY_ICON) ||
       process.env.SHOW_BIRTHDAY_ICON === '',
     helpAndFaqURL: process.env.HELP_AND_FAQ_URL || 'https://experiasolutions.com.br',
+    customFooter:
+      process.env.CUSTOM_FOOTER ||
+      '[AIDA](https://aida.experiasolutions.com.br) — Imersão Ativa em Inglês com IA',
     sharedLinksEnabled,
     publicSharedLinksEnabled,
     openidReuseTokens,

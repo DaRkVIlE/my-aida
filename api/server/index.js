@@ -81,6 +81,160 @@ const configureGenerationStreams = () => {
   GenerationJobManager.initialize();
 };
 
+/**
+ * Injeta metadados canônicos da AIDA, OpenGraph completo para WhatsApp/Telegram,
+ * Title Enforcer imutável e o Player HUD do MANA 3.0 diretamente no index.html servido pelo servidor.
+ */
+function enhanceHtmlWithAida(html) {
+  if (!html || typeof html !== 'string') {
+    return html;
+  }
+
+  // 1. Forçar título canônico da AIDA
+  html = html.replace(/<title>[\s\S]*?<\/title>/gi, '<title>AIDA — Aprenda Inglês por Imersão Ativa</title>');
+
+  // 2. Limpar meta tags antigas de OpenGraph, Twitter e Description
+  html = html.replace(/<meta\s+property="og:[^"]*"[^>]*>/gi, '');
+  html = html.replace(/<meta\s+name="twitter:[^"]*"[^>]*>/gi, '');
+  html = html.replace(/<meta\s+name="description"[^>]*>/gi, '');
+
+  // 3. Injetar metadados canônicos da AIDA
+  const aidaMetaTags = `
+    <meta name="description" content="AIDA — Aprenda inglês por imersão ativa com tutores de IA. Sem aulas chatas, sem gramática decorada. Conversação real desde o primeiro dia." />
+    <meta property="og:type" content="website" />
+    <meta property="og:site_name" content="AIDA" />
+    <meta property="og:url" content="https://aida.experiasolutions.com.br" />
+    <meta property="og:title" content="AIDA — Aprenda Inglês por Imersão Ativa" />
+    <meta property="og:description" content="Converse com tutores de IA especializados e aprenda inglês do jeito que o cérebro foi feito para aprender — por imersão ativa." />
+    <meta property="og:image" content="https://aida.experiasolutions.com.br/assets/aida-og.png" />
+    <meta property="og:image:width" content="1200" />
+    <meta property="og:image:height" content="630" />
+    <meta property="og:image:alt" content="AIDA — Plataforma de Imersão em Inglês com IA" />
+    <meta property="og:locale" content="pt_BR" />
+    <meta name="twitter:card" content="summary_large_image" />
+    <meta name="twitter:title" content="AIDA — Aprenda Inglês por Imersão Ativa" />
+    <meta name="twitter:description" content="Converse com tutores de IA especializados e aprenda inglês por imersão ativa." />
+    <meta name="twitter:image" content="https://aida.experiasolutions.com.br/assets/aida-og.png" />
+  `;
+
+  html = html.replace(/<head>/i, `<head>${aidaMetaTags}`);
+
+  // 4. Injetar Player HUD MANA e Title Enforcer no final do body
+  const aidaHudAndTitleScript = `
+    <!-- AIDA MANA 3.0 Player HUD & Title Enforcer -->
+    <style>
+      #aida-mana-hud {
+        position: fixed;
+        top: 10px;
+        right: 18px;
+        z-index: 99999;
+        display: none;
+        align-items: center;
+        gap: 8px;
+        background: rgba(15, 15, 22, 0.85);
+        backdrop-filter: blur(12px);
+        -webkit-backdrop-filter: blur(12px);
+        border: 1px solid rgba(139, 92, 246, 0.4);
+        border-radius: 9999px;
+        padding: 5px 14px;
+        color: #f3f4f6;
+        font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+        font-size: 12px;
+        font-weight: 600;
+        box-shadow: 0 4px 18px rgba(0, 0, 0, 0.45), 0 0 10px rgba(139, 92, 246, 0.25);
+        user-select: none;
+        pointer-events: auto;
+      }
+      #aida-mana-hud:hover {
+        border-color: rgba(139, 92, 246, 0.8);
+      }
+      .mana-badge-rank {
+        background: linear-gradient(135deg, #8b5cf6, #ec4899);
+        color: #fff;
+        padding: 2px 8px;
+        border-radius: 9999px;
+        font-size: 10px;
+        font-weight: 800;
+        letter-spacing: 0.5px;
+      }
+      .mana-badge-item {
+        display: inline-flex;
+        align-items: center;
+        gap: 3px;
+      }
+      .mana-badge-xp { color: #34d399; }
+      .mana-badge-streak { color: #fb923c; }
+      @media (max-width: 640px) {
+        #aida-mana-hud {
+          top: auto;
+          bottom: 12px;
+          right: 12px;
+          font-size: 11px;
+          padding: 4px 10px;
+        }
+      }
+    </style>
+    <div id="aida-mana-hud">
+      <span class="mana-badge-rank" id="mana-hud-rank">RANK E</span>
+      <span class="mana-badge-item mana-badge-xp">⚡ <span id="mana-hud-xp">0 XP</span></span>
+      <span class="mana-badge-item mana-badge-streak">🔥 <span id="mana-hud-streak">1d</span></span>
+    </div>
+    <script>
+      (function() {
+        function enforceAidaTitle() {
+          if (document.title.includes('LibreChat')) {
+            document.title = document.title.replace(/LibreChat/g, 'AIDA');
+          }
+        }
+        enforceAidaTitle();
+        var titleObserver = new MutationObserver(enforceAidaTitle);
+        var targetTitle = document.querySelector('title');
+        if (targetTitle) {
+          titleObserver.observe(targetTitle, { childList: true, characterData: true, subtree: true });
+        }
+
+        var hudEl = document.getElementById('aida-mana-hud');
+        var xpEl = document.getElementById('mana-hud-xp');
+        var rankEl = document.getElementById('mana-hud-rank');
+        var streakEl = document.getElementById('mana-hud-streak');
+
+        function updateManaHud() {
+          fetch('/api/user', { credentials: 'include' })
+            .then(function(res) {
+              if (!res.ok) throw new Error('Unauthenticated');
+              return res.json();
+            })
+            .then(function(user) {
+              if (!user || !user.id) return;
+              return fetch('/api/mana/profile/' + user.id, { credentials: 'include' });
+            })
+            .then(function(res) {
+              if (!res || !res.ok) return;
+              return res.json();
+            })
+            .then(function(stats) {
+              if (!stats) return;
+              if (hudEl) hudEl.style.display = 'inline-flex';
+              if (xpEl) xpEl.textContent = (stats.currentXp || 0) + ' XP';
+              if (rankEl) rankEl.textContent = 'RANK ' + (stats.playerRank || 'E');
+              if (streakEl) streakEl.textContent = (stats.streakDays || 1) + 'd';
+            })
+            .catch(function() {
+              if (hudEl) hudEl.style.display = 'none';
+            });
+        }
+
+        setTimeout(updateManaHud, 1000);
+        setInterval(updateManaHud, 25000);
+      })();
+    </script>
+  `;
+
+  html = html.replace(/<\/body>/i, `${aidaHudAndTitleScript}</body>`);
+
+  return html;
+}
+
 const startServer = async () => {
   const { metricsMiddleware, metricsRouter } = createMetrics();
   if (!process.env.METRICS_SECRET) {
@@ -125,7 +279,7 @@ const startServer = async () => {
   });
 
   const indexPath = path.join(appConfig.paths.dist, 'index.html');
-  let indexHTML = fs.readFileSync(indexPath, 'utf8');
+  let indexHTML = enhanceHtmlWithAida(fs.readFileSync(indexPath, 'utf8'));
 
   // In order to provide support to serving the application in a sub-directory
   // We need to update the base href if the DOMAIN_CLIENT is specified and not the root path

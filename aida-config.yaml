@@ -60,8 +60,10 @@ memory:
 # ── Model Specs: Personas como seletor de imersão ─────────────────────────────
 modelSpecs:
   enforce: true
+  prioritize: true
   list:
     - name: "jordan"
+      default: true
       label: "🎬 Jordan — Amigo de NY"
       description: "Conversas casuais, cultura pop, séries e dia a dia americano"
       iconURL: "https://em-content.zobj.net/source/apple/391/clapper-board_1f3ac.png"
