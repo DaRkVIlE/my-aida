@@ -101,7 +101,7 @@ router.post('/2fa/backup/regenerate', middleware.requireJwtAuth, regenerateBacku
 router.get('/graph-token', middleware.requireJwtAuth, graphTokenController);
 
 router.post('/demo', async (req, res) => {
-  if (!demoSessionManager.isEnabled()) {
+  if (!demoSessionManager || typeof demoSessionManager.isEnabled !== 'function' || !demoSessionManager.isEnabled()) {
     return res.status(403).json({ message: 'Demo mode is not enabled' });
   }
 

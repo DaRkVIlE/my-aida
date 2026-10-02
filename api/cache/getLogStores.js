@@ -57,6 +57,10 @@ const namespaces = {
     CacheKeys.ADMIN_OAUTH_EXCHANGE,
     Time.THIRTY_SECONDS,
   ),
+  ...(CacheKeys.USER_PRINCIPALS ? { [CacheKeys.USER_PRINCIPALS]: standardCache(CacheKeys.USER_PRINCIPALS) } : {}),
+  ...(CacheKeys.PROMPT_GROUPS_ACCESS ? { [CacheKeys.PROMPT_GROUPS_ACCESS]: standardCache(CacheKeys.PROMPT_GROUPS_ACCESS) } : {}),
+  USER_PRINCIPALS: standardCache('USER_PRINCIPALS'),
+  PROMPT_GROUPS_ACCESS: standardCache('PROMPT_GROUPS_ACCESS'),
 };
 
 /**
@@ -217,8 +221,11 @@ if (!cacheConfig.USE_REDIS && !cacheConfig.CI) {
  * @throws Will throw an error if an invalid key is passed.
  */
 const getLogStores = (key) => {
-  if (!key || !namespaces[key]) {
+  if (!key) {
     throw new Error(`Invalid store key: ${key}`);
+  }
+  if (!namespaces[key]) {
+    namespaces[key] = standardCache(key);
   }
   return namespaces[key];
 };

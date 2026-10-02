@@ -893,6 +893,15 @@ const startServer = async () => {
   /** 404 for unmatched API routes */
   app.use('/api', apiNotFound);
 
+  const { getTriagemHtml } = require('./routes/triagemLanding');
+  const gabeWaNumber = process.env.GABE_WHATSAPP_NUMBER || '5511967239791';
+
+  /** Rota explícita e ultra-rápida da Landing Page & Triagem MANA 3.0 */
+  app.get(['/triagem', '/quiz', '/diagnostico'], (req, res) => {
+    res.setHeader('Content-Type', 'text/html; charset=utf-8');
+    res.send(getTriagemHtml(gabeWaNumber));
+  });
+
   /** SPA fallback - serve index.html for all unmatched routes */
   app.use((req, res) => {
     res.set({
