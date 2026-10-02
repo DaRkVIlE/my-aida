@@ -7,6 +7,7 @@ const {
   validateConvoAccess,
   buildEndpointOption,
   canAccessAgentFromBody,
+  manaGating,
 } = require('~/server/middleware');
 const { initializeClient } = require('~/server/services/Endpoints/agents');
 const AgentController = require('~/server/controllers/agents/request');
@@ -30,9 +31,12 @@ router.use(moderateText);
 router.use(checkAgentAccess);
 router.use(checkAgentResourceAccess);
 router.use(validateConvoAccess);
+// 💙 MANA Gating — verifica saldo antes de liberar o turno (Free vs Pro)
+router.use(manaGating);
 router.use(buildEndpointOption);
 
 const controller = async (req, res, next) => {
+
   await AgentController(req, res, next, initializeClient, addTitle);
 };
 

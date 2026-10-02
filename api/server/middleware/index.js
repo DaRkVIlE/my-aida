@@ -53,4 +53,5 @@ module.exports = {
   buildEndpointOption,
   validateRegistration,
   validatePasswordReset,
+  manaGating: require('./manaGating'),
 };

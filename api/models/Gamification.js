@@ -62,10 +62,28 @@ const gamificationSchema = new mongoose.Schema(
       type: Number,
       default: 0,
     },
+    /** Tier do usuário: 'free' = aluno visitante (50 MANA/dia), 'pro' = aluno da Turma Alpha (MANA ilimitado) */
+    tier: {
+      type: String,
+      enum: ['free', 'pro'],
+      default: 'free',
+      index: true,
+    },
+    /** Timestamp quando o MANA chegou a 0 — usado para exibir o modal de bloqueio */
+    manaLockedAt: {
+      type: Date,
+      default: null,
+    },
+    /** Total de MANA gasto em toda a vida do usuário (analytics) */
+    totalManaSpent: {
+      type: Number,
+      default: 0,
+    },
     history: [
       {
         xp: Number,
         pureRun: { type: Boolean, default: false },
+        mana: { type: Number, default: null },
         date: { type: Date, default: Date.now },
         messageId: String,
       },

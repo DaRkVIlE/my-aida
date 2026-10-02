@@ -432,6 +432,71 @@ function enhanceHtmlWithAida(html) {
         var drawerManaText = document.getElementById('drawer-mana-text');
         var drawerManaBar = document.getElementById('drawer-mana-bar');
 
+        // === MANA DEPLETED MODAL ===
+        var manaModal = null;
+        function showManaDepletedModal(data) {
+          if (manaModal && document.body.contains(manaModal)) return;
+
+          manaModal = document.createElement('div');
+          manaModal.id = 'aida-mana-modal-overlay';
+          manaModal.style.cssText = [
+            'position:fixed;inset:0;background:rgba(0,0,0,0.75);',
+            'backdrop-filter:blur(8px);-webkit-backdrop-filter:blur(8px);',
+            'z-index:200000;display:flex;align-items:center;justify-content:center;',
+            'padding:20px;animation:fadeInAida 0.3s ease;'
+          ].join('');
+
+          var waLink = data.upgradeLink || 'https://wa.me/5511999999999';
+          var refill = data.refillAt || 'Meia-noite UTC';
+
+          manaModal.innerHTML = [
+            '<div style="background:#0b0c10;border:1px solid rgba(139,92,246,0.5);border-radius:20px;',
+            'padding:32px 28px;max-width:400px;width:100%;text-align:center;',
+            'box-shadow:0 20px 60px rgba(0,0,0,0.8),0 0 30px rgba(139,92,246,0.2);">',
+            '<div style="font-size:48px;margin-bottom:12px;">💙</div>',
+            '<h2 style="font-family:system-ui,sans-serif;font-size:20px;font-weight:800;',
+            'color:#f8fafc;margin-bottom:8px;">Sua reserva de MANA zerou!</h2>',
+            '<p style="font-family:system-ui,sans-serif;font-size:13px;color:#94a3b8;',
+            'line-height:1.6;margin-bottom:20px;">',
+            'Você praticou muito hoje! 🔥 Alunos da <strong style="color:#10b981;">Turma Alpha</strong>',
+            ' têm MANA ilimitado 💙 ∞ e acesso irrestrito a todos os 5 Portais de Fluência.<br><br>',
+            '<span style="color:#64748b;font-size:12px;">⏰ Recarga automática: ', refill, '</span>',
+            '</p>',
+            '<a href="', waLink, '" target="_blank" rel="noreferrer" ',
+            'style="display:block;background:#10b981;color:#000;font-family:system-ui,sans-serif;',
+            'font-size:14px;font-weight:800;padding:14px 20px;border-radius:12px;',
+            'text-decoration:none;margin-bottom:12px;transition:background 0.2s;">',
+            '📲 Entrar na Turma Alpha no WhatsApp',
+            '</a>',
+            '<button onclick="document.getElementById(\'aida-mana-modal-overlay\').remove()" ',
+            'style="background:transparent;border:1px solid rgba(255,255,255,0.12);',
+            'color:#64748b;font-family:system-ui,sans-serif;font-size:12px;',
+            'padding:8px 16px;border-radius:8px;cursor:pointer;width:100%;">',
+            'Voltar amanhã (recarga gratuita às meia-noite)',
+            '</button>',
+            '</div>'
+          ].join('');
+
+          document.body.appendChild(manaModal);
+        }
+
+        // === INTERCEPTAR FETCH PARA CAPTURAR 402 MANA_DEPLETED ===
+        var _origFetch = window.fetch;
+        window.fetch = function() {
+          var args = arguments;
+          return _origFetch.apply(this, args).then(function(response) {
+            if (response.status === 402) {
+              response.clone().json().then(function(body) {
+                if (body && body.code === 'MANA_DEPLETED') {
+                  showManaDepletedModal(body);
+                  updateManaHud();
+                }
+              }).catch(function() {});
+            }
+            return response;
+          });
+        };
+
         window.toggleAidaCockpit = function() {
           var drawer = document.getElementById('aida-cockpit-drawer');
           var backdrop = document.getElementById('aida-cockpit-backdrop');
@@ -463,14 +528,41 @@ function enhanceHtmlWithAida(html) {
             .then(function(stats) {
               if (!stats) return;
               if (hudEl) hudEl.style.display = 'inline-flex';
-              var currentMana = typeof stats.currentMana === 'number' ? stats.currentMana : 100;
+
+              var isPro = stats.tier === 'pro';
+              var currentMana = isPro ? '∞' : (typeof stats.currentMana === 'number' ? stats.currentMana : 100);
               var maxMana = stats.maxMana || 100;
+              var manaNum = isPro ? maxMana : (typeof stats.currentMana === 'number' ? stats.currentMana : 100);
+              var manaPercent = isPro ? 100 : Math.min(100, Math.round((manaNum / maxMana) * 100));
+
               if (manaEl) manaEl.textContent = currentMana;
               if (xpEl) xpEl.textContent = (stats.currentXp || 0) + ' XP';
               if (rankEl) rankEl.textContent = 'RANK ' + (stats.playerRank || 'E');
               if (streakEl) streakEl.textContent = (stats.streakDays || 1) + 'd';
-              if (drawerManaText) drawerManaText.textContent = currentMana + ' / ' + maxMana + ' MANA';
-              if (drawerManaBar) drawerManaBar.style.width = Math.min(100, Math.round((currentMana / maxMana) * 100)) + '%';
+              if (drawerManaText) drawerManaText.textContent = (isPro ? '∞ / ∞ (Pro ⭐)' : (currentMana + ' / ' + maxMana + ' MANA'));
+              if (drawerManaBar) {
+                drawerManaBar.style.width = manaPercent + '%';
+                drawerManaBar.style.background = isPro
+                  ? 'linear-gradient(90deg,#10b981,#34d399)'
+                  : (manaPercent <= 20 ? '#ef4444' : manaPercent <= 50 ? '#f97316' : '#38bdf8');
+              }
+
+              // Flash vermelho no HUD quando MANA crítico (≤20%)
+              if (hudEl && !isPro && manaPercent <= 20) {
+                hudEl.style.borderColor = 'rgba(239,68,68,0.7)';
+                hudEl.style.boxShadow = '0 4px 20px rgba(0,0,0,0.5),0 0 14px rgba(239,68,68,0.4)';
+              } else if (hudEl) {
+                hudEl.style.borderColor = '';
+                hudEl.style.boxShadow = '';
+              }
+
+              // Mostrar modal automaticamente se já zerou
+              if (!isPro && manaNum <= 0) {
+                showManaDepletedModal({
+                  upgradeLink: 'https://wa.me/5511999999999',
+                  refillAt: 'Meia-noite UTC'
+                });
+              }
             })
             .catch(function() {
               if (hudEl) hudEl.style.display = 'none';
