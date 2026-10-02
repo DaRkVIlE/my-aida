@@ -6,7 +6,7 @@ const { demoSessionManager } = require('@librechat/api');
 const { logger } = require('@librechat/data-schemas');
 
 const demoMessageLimiter = async (req, res, next) => {
-  if (!demoSessionManager.isEnabled()) {
+  if (!demoSessionManager || typeof demoSessionManager.isEnabled !== 'function' || !demoSessionManager.isEnabled()) {
     return next();
   }
 

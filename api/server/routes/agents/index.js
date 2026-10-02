@@ -28,7 +28,7 @@ function hasTenantMismatch(job, user) {
 const router = express.Router();
 
 const optionalDemoAuth = async (req, res, next) => {
-  if (!demoSessionManager.isEnabled()) {
+  if (!demoSessionManager || typeof demoSessionManager.isEnabled !== 'function' || !demoSessionManager.isEnabled()) {
     return requireJwtAuth(req, res, next);
   }
   

@@ -6,7 +6,7 @@ const { demoSessionManager } = require('@librechat/api');
 const { logger } = require('@librechat/data-schemas');
 
 const requireDemoAuth = async (req, res, next) => {
-  if (!demoSessionManager.isEnabled()) {
+  if (!demoSessionManager || typeof demoSessionManager.isEnabled !== 'function' || !demoSessionManager.isEnabled()) {
     return res.status(403).json({ message: 'Demo mode is not enabled' });
   }
 

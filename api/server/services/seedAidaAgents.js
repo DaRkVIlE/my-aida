@@ -89,13 +89,53 @@ async function seedAidaAgents() {
         },
       };
 
-      await Agent.findOneAndUpdate(
+      const savedAgent = await Agent.findOneAndUpdate(
         { id: agentId },
         { $set: agentData },
         { upsert: true, new: true, setDefaultsOnInsert: true }
       );
 
-      console.log(`[AIDA SEED] ✅ Agente Nativo sincronizado: ${spec.label} (${agentId})`);
+      // 1. Adicionar o agente ao projeto global da instância ('instance')
+      try {
+        const rawDb = mongoose.connection.db;
+        if (rawDb) {
+          await rawDb.collection('projects').updateOne(
+            { name: 'instance' },
+            { $addToSet: { agentIds: agentId } },
+            { upsert: true }
+          );
+        }
+      } catch (projErr) {
+        console.warn(`[AIDA SEED] Aviso ao associar agente ${agentId} ao projeto global:`, projErr?.message);
+      }
+
+      // 2. Conceder permissões públicas e de owner no sistema ACL
+      try {
+        const { grantPermission } = require('~/server/services/PermissionService');
+        const { AccessRoleIds, ResourceType, PrincipalType } = require('librechat-data-provider');
+
+        await grantPermission({
+          principalType: PrincipalType.USER,
+          principalId: systemAuthorId,
+          resourceType: ResourceType.AGENT,
+          resourceId: savedAgent._id,
+          accessRoleId: AccessRoleIds.AGENT_OWNER,
+          grantedBy: systemAuthorId,
+        });
+
+        await grantPermission({
+          principalType: PrincipalType.PUBLIC,
+          principalId: null,
+          resourceType: ResourceType.AGENT,
+          resourceId: savedAgent._id,
+          accessRoleId: AccessRoleIds.AGENT_VIEWER,
+          grantedBy: systemAuthorId,
+        });
+      } catch (permErr) {
+        console.warn(`[AIDA SEED] Aviso ao conceder permissões ACL para ${agentId}:`, permErr?.message);
+      }
+
+      console.log(`[AIDA SEED] ✅ Agente Nativo sincronizado e público: ${spec.label} (${agentId})`);
     }
 
     console.log('[AIDA SEED] Todos os 5 Guardiões Nativos da AIDA foram persistidos no MongoDB com sucesso!');
