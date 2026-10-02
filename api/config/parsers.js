@@ -1,6 +1,11 @@
 const { klona } = require('klona');
 const winston = require('winston');
-const traverse = require('traverse');
+let traverse;
+try {
+  traverse = require('traverse');
+} catch {
+  traverse = null;
+}
 
 const SPLAT_SYMBOL = Symbol.for('splat');
 const MESSAGE_SYMBOL = Symbol.for('message');
@@ -302,39 +307,47 @@ const debugTraverse = winston.format.printf(({ level, message, timestamp, ...met
     if (copy.tenantId === SYSTEM_TENANT_ID) {
       delete copy.tenantId;
     }
-    traverse(copy).forEach(function (value) {
-      if (typeof this?.key === 'symbol') {
-        return;
+    if (typeof traverse === 'function') {
+      traverse(copy).forEach(function (value) {
+        if (typeof this?.key === 'symbol') {
+          return;
+        }
+
+        let _parentKey = '';
+        const parent = this.parent;
+
+        if (typeof parent?.key !== 'symbol' && parent?.key) {
+          _parentKey = parent.key;
+        }
+
+        const parentKey = `${parent && parent.notRoot ? _parentKey + '.' : ''}`;
+
+        const tabs = `${parent && parent.notRoot ? '    ' : '  '}`;
+
+        const currentKey = this?.key ?? 'unknown';
+
+        if (this.isLeaf && typeof value === 'string') {
+          const truncatedText = truncateLongStrings(value);
+          msg += `\n${tabs}${parentKey}${currentKey}: ${JSON.stringify(truncatedText)},`;
+        } else if (this.notLeaf && Array.isArray(value) && value.length > 0) {
+          const currentMessage = `\n${tabs}// ${value.length} ${currentKey.replace(/s$/, '')}(s)`;
+          this.update(currentMessage, true);
+          msg += currentMessage;
+          const stringifiedArray = value.map(condenseArray);
+          msg += `\n${tabs}${parentKey}${currentKey}: [${stringifiedArray}],`;
+        } else if (this.isLeaf && typeof value === 'function') {
+          msg += `\n${tabs}${parentKey}${currentKey}: function,`;
+        } else if (this.isLeaf) {
+          msg += `\n${tabs}${parentKey}${currentKey}: ${value},`;
+        }
+      });
+    } else {
+      try {
+        msg += `\n  ${JSON.stringify(copy)}`;
+      } catch {
+        msg += '\n  [metadata]';
       }
-
-      let _parentKey = '';
-      const parent = this.parent;
-
-      if (typeof parent?.key !== 'symbol' && parent?.key) {
-        _parentKey = parent.key;
-      }
-
-      const parentKey = `${parent && parent.notRoot ? _parentKey + '.' : ''}`;
-
-      const tabs = `${parent && parent.notRoot ? '    ' : '  '}`;
-
-      const currentKey = this?.key ?? 'unknown';
-
-      if (this.isLeaf && typeof value === 'string') {
-        const truncatedText = truncateLongStrings(value);
-        msg += `\n${tabs}${parentKey}${currentKey}: ${JSON.stringify(truncatedText)},`;
-      } else if (this.notLeaf && Array.isArray(value) && value.length > 0) {
-        const currentMessage = `\n${tabs}// ${value.length} ${currentKey.replace(/s$/, '')}(s)`;
-        this.update(currentMessage, true);
-        msg += currentMessage;
-        const stringifiedArray = value.map(condenseArray);
-        msg += `\n${tabs}${parentKey}${currentKey}: [${stringifiedArray}],`;
-      } else if (this.isLeaf && typeof value === 'function') {
-        msg += `\n${tabs}${parentKey}${currentKey}: function,`;
-      } else if (this.isLeaf) {
-        msg += `\n${tabs}${parentKey}${currentKey}: ${value},`;
-      }
-    });
+    }
 
     msg += '\n}';
     return msg;

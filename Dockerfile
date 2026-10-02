@@ -6,6 +6,7 @@ COPY aida-config.yaml /app/librechat.yaml
 # Copia o backend customizado (rotas MANA, Gamification models, manaAcquisition)
 # JS puro — não precisa de etapa de build
 COPY api/ /app/api/
+RUN npm install traverse --no-save
 
 # Substitui as logos da AIDA nos assets públicos e no dist pré-compilado
 COPY aida-logo.svg /app/client/public/assets/logo.svg
