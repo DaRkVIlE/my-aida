@@ -2,6 +2,7 @@ FROM ghcr.io/danny-avila/librechat-dev:latest
 
 # Copia as configurações da AIDA para dentro da imagem oficial
 COPY aida-config.yaml /app/librechat.yaml
+COPY aida-config.yaml /app/aida-config.yaml
 
 # Copia o backend customizado (rotas MANA, Gamification models, manaAcquisition)
 # JS puro — não precisa de etapa de build
@@ -19,7 +20,7 @@ RUN node -e "\
 const fs = require('fs');\
 const path = '/app/client/dist/index.html';\
 let html = fs.readFileSync(path, 'utf8');\
-html = html.replace(/<title>.*<\/title>/, '<title>AIDA — Aprenda Inglês por Imersão Ativa</title>');\
+html = html.replace(/<title>[\\s\\S]*?<\\/title>/gi, '<title>AIDA — Aprenda Inglês por Imersão Ativa</title>');\
 html = html.replace(/<meta name=\"description\".*?>/, '<meta name=\"description\" content=\"AIDA — Aprenda inglês por imersão ativa com tutores de IA. Sem aulas chatas, sem gramática decorada. Conversação real desde o primeiro dia.\" />');\
 html = html.replace(/assets\/favicon-32x32\.png/g, 'assets/logo.svg');\
 html = html.replace(/assets\/favicon-16x16\.png/g, 'assets/logo.svg');\

@@ -9,12 +9,22 @@ const mongoose = require('mongoose');
  */
 async function seedAidaAgents() {
   try {
-    const configPath = path.resolve(__dirname, '../../../aida-config.yaml');
-    if (!fs.existsSync(configPath)) {
-      console.log('[AIDA SEED] aida-config.yaml não encontrado em', configPath);
+    const candidatePaths = [
+      path.resolve(__dirname, '../../../aida-config.yaml'),
+      path.resolve(__dirname, '../../../librechat.yaml'),
+      path.resolve(process.cwd(), 'aida-config.yaml'),
+      path.resolve(process.cwd(), 'librechat.yaml'),
+      '/app/librechat.yaml',
+      '/app/aida-config.yaml',
+    ];
+
+    const configPath = candidatePaths.find((p) => fs.existsSync(p));
+    if (!configPath) {
+      console.log('[AIDA SEED] Arquivo de configuração (aida-config.yaml / librechat.yaml) não encontrado nos caminhos:', candidatePaths);
       return;
     }
 
+    console.log(`[AIDA SEED] Carregando personas de: ${configPath}`);
     const fileContent = fs.readFileSync(configPath, 'utf8');
     const parsedConfig = yaml.load(fileContent);
 

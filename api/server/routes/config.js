@@ -106,7 +106,7 @@ function buildPreLoginPayload() {
     payload.ldap = ldap;
   }
 
-  payload.demoModeEnabled = demoSessionManager.isEnabled();
+  payload.demoModeEnabled = typeof demoSessionManager?.isEnabled === 'function' ? demoSessionManager.isEnabled() : false;
 
   return payload;
 }

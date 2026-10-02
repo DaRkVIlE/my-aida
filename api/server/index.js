@@ -430,17 +430,56 @@ function enhanceHtmlWithAida(html) {
 
     <script>
       (function() {
-        function enforceAidaTitle() {
-          if (document.title.includes('LibreChat')) {
-            document.title = document.title.replace(/LibreChat/g, 'AIDA');
+        // === TITLE ENFORCER ABSOLUTO (PROPERTY INTERCEPTOR + OBSERVER + POLLING) ===
+        (function setupTitleEnforcer() {
+          function sanitizeTitle(val) {
+            if (typeof val !== 'string') return 'AIDA — Aprenda Inglês por Imersão Ativa';
+            var sanitized = val.replace(/LibreChat/gi, 'AIDA');
+            if (sanitized === 'AIDA' || sanitized.trim() === '') {
+              return 'AIDA — Aprenda Inglês por Imersão Ativa';
+            }
+            return sanitized;
           }
-        }
-        enforceAidaTitle();
-        var titleObserver = new MutationObserver(enforceAidaTitle);
-        var targetTitle = document.querySelector('title');
-        if (targetTitle) {
-          titleObserver.observe(targetTitle, { childList: true, characterData: true, subtree: true });
-        }
+
+          try {
+            var proto = Document.prototype;
+            var desc = Object.getOwnPropertyDescriptor(proto, 'title');
+            if (!desc) {
+              proto = Object.getPrototypeOf(document);
+              desc = Object.getOwnPropertyDescriptor(proto, 'title');
+            }
+            if (desc && desc.set) {
+              var origSet = desc.set;
+              var origGet = desc.get;
+              Object.defineProperty(document, 'title', {
+                configurable: true,
+                enumerable: true,
+                get: function() {
+                  return sanitizeTitle(origGet.call(document));
+                },
+                set: function(newVal) {
+                  return origSet.call(document, sanitizeTitle(newVal));
+                }
+              });
+            }
+          } catch(e) {}
+
+          function checkTitle() {
+            var current = document.title;
+            if (current.toLowerCase().includes('librechat')) {
+              document.title = sanitizeTitle(current);
+            }
+          }
+
+          checkTitle();
+          setInterval(checkTitle, 300);
+
+          var targetTitle = document.querySelector('title');
+          if (targetTitle) {
+            var titleObserver = new MutationObserver(checkTitle);
+            titleObserver.observe(targetTitle, { childList: true, characterData: true, subtree: true });
+          }
+        })();
 
         var hudEl = document.getElementById('aida-mana-hud');
         var manaEl = document.getElementById('mana-hud-val');
