@@ -49,13 +49,13 @@ router.post('/chat', async (req, res) => {
       { role: 'user', content: message },
     ];
 
-    // Chamada ao Llama 3.3 via Groq ou endpoint compatível OpenAI
+    // Chamada ao qwen3.8-27b via Groq (modelo disponível nessa conta)
     const apiKey = process.env.GROQ_API_KEY || process.env.OPENAI_API_KEY;
     const apiUrl = process.env.GROQ_API_KEY 
       ? 'https://api.groq.com/openai/v1/chat/completions' 
       : 'https://api.openai.com/v1/chat/completions';
     const model = process.env.GROQ_API_KEY 
-      ? 'llama-3.3-70b-versatile' 
+      ? 'qwen/qwen3.8-27b'
       : 'gpt-4o-mini';
 
     if (!apiKey) {

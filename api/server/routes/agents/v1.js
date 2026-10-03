@@ -153,7 +153,27 @@ router.post(
  * @param {AgentListParams} req.query - The agent list parameters for pagination and sorting.
  * @returns {AgentListResponse} 200 - success response - application/json
  */
-router.get('/', checkAgentAccess, v1.getListAgents);
+// Graceful fallback for student client cache: return empty list instead of 403
+router.get('/', (req, res, next) => {
+  const originalStatus = res.status.bind(res);
+  let intercepted = false;
+  res.status = function (code) {
+    if (code === 403) {
+      intercepted = true;
+      return {
+        json: () => originalStatus(200).json({ data: [], has_more: false }),
+        send: () => originalStatus(200).json({ data: [], has_more: false }),
+      };
+    }
+    return originalStatus(code);
+  };
+  return checkAgentAccess(req, res, (err) => {
+    if (err || intercepted) {
+      return res.status(200).json({ data: [], has_more: false });
+    }
+    return v1.getListAgents(req, res, next);
+  });
+});
 
 /**
  * Uploads and updates an avatar for a specific agent.
