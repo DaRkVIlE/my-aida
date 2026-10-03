@@ -276,5 +276,90 @@ router.get('/students', requireAdminOrKey, async (req, res) => {
   }
 });
 
+/**
+ * GET /api/mana/mentor-handoff/:userId
+ * Retorna o Dossiê Pedagógico sintetizado pelo Meta Agente AIDA para Gabriel
+ * usar como pauta e condução cirúrgica na aula presencial.
+ */
+router.get('/mentor-handoff/:userId', requireAdminOrKey, async (req, res) => {
+  try {
+    const { userId } = req.params;
+    const User = require('mongoose').models.User;
+    
+    let user = null;
+    if (User) {
+      user = await User.findById(userId).select('name username email role createdAt').lean();
+    }
+    
+    const stats = await Gamification.findOne({ user: userId }).lean() || {};
+    const rank = stats.playerRank || 'E';
+    const xp = stats.currentXp || 0;
+    const streak = stats.streakDays || 0;
+    const pureRuns = stats.totalPureRuns || 0;
+    const studentName = user?.name || user?.username || 'Aluno MANA';
+
+    // Roteiro cirúrgico calibrado por Rank
+    let bossRaidSugerida = "O Teste do Café em NY (60 segundos de pressão com Jordan)";
+    let focoPronuncia = "Reduções coloquiais: gonna, wanna, gotta, whatchu";
+    let chunksAlvo = ["Could I get a...", "Hold on a second", "I'm in a rush"];
+
+    if (rank === 'D') {
+      bossRaidSugerida = "O Interrogatório da Alfândega no JFK com Miles";
+      focoPronuncia = "Linking sounds e entonação de perguntas diretas vs indiretas";
+      chunksAlvo = ["Turns out that...", "My luggage didn't show up", "Is there any way to..."];
+    } else if (rank === 'C') {
+      bossRaidSugerida = "A Roda de Chopp no Bar com Zack e 2 nativos";
+      focoPronuncia = "Storytelling sem pausas e conectores de contraste";
+      chunksAlvo = ["Long story short...", "Fair enough, but...", "It suddenly hit me that..."];
+    } else if (rank === 'B' || rank === 'A') {
+      bossRaidSugerida = "A Reunião de Diretoria Global & Pitch com Alexandra";
+      focoPronuncia = "Autoridade, pausas retóricas e diplomacia executiva";
+      chunksAlvo = ["To play devil's advocate...", "Let's touch base on...", "Given the current constraints..."];
+    } else if (rank === 'S') {
+      bossRaidSugerida = "O Grande Simpósio da Soberania com Prof. Hayes";
+      focoPronuncia = "Ironia, subtexto, humor britânico e precisão léxica nativa";
+      chunksAlvo = ["Hardly an exaggeration", "To put it mildly", "A rather poignant reminder"];
+    }
+
+    const dossierMarkdown = `
+# 🧠 Dossiê Pedagógico AIDA • Aula Presencial com Gabe
+**Aluno:** ${studentName} | **Rank:** ${rank} | **XP:** ${xp} | **Ofensiva:** ${streak} dias 🔥 | **Pure Runs:** ${pureRuns} ⚡
+
+---
+
+### 1. 🎯 Diagnóstico Atual
+- **Nível Identificado:** CEFR Reflexo baseado em ${xp} XP acumulados.
+- **Portais Conquistados:** ${(stats.conqueredModules || []).join(', ') || 'Nenhum portal finalizado ainda (em onboarding)'}
+- **Filtro Afetivo Estimado:** ${streak >= 3 ? '🟢 Baixo (aluno engajado e destravando)' : '🟡 Moderado (necessita reforço de confiança)'}
+
+### 2. 💎 Chunks Nucleares para Ativação Hoje
+${chunksAlvo.map(c => `- **"${c}"**`).join('\n')}
+
+### 3. ⚔️ Pauta Cirúrgica para os 30-40 min com Gabe
+1. **Aquecimento (5 min):** Conversa casual sem permissão de traduzir mentalmente.
+2. **Simulação da Boss Raid (20 min):** **${bossRaidSugerida}**
+3. **Ponto Cego de Pronúncia:** ${focoPronuncia}
+4. **Fechamento (5 min):** Debriefing olho no olho, carimbo de aprovação do Portal e missão para a próxima semana!
+`;
+
+    res.json({
+      userId,
+      studentName,
+      playerRank: rank,
+      currentXp: xp,
+      streakDays: streak,
+      totalPureRuns: pureRuns,
+      bossRaidSugerida,
+      focoPronuncia,
+      chunksAlvo,
+      dossierMarkdown,
+    });
+  } catch (error) {
+    console.error('[MANA] Erro ao gerar handoff do mentor:', error);
+    res.status(500).json({ error: 'Erro ao gerar dossiê de handoff.' });
+  }
+});
+
 module.exports = router;
+
 

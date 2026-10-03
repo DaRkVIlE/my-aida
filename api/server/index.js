@@ -314,6 +314,7 @@ const startServer = async () => {
   app.use('/api/tags', routes.tags);
   app.use('/api/mcp', routes.mcp);
   app.use('/api/gamification', routes.gamification);
+  app.use('/api/mana/tutor', routes.aidaTutor);
   app.use('/api/mana', routes.manaProfile);
   app.use('/api/rum', routes.rum);
 
