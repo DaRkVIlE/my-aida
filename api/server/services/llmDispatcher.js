@@ -1,87 +1,107 @@
 /**
- * KAIROS LLM Dispatcher (God Pool Multi-Provider)
+ * KAIROS LLM Dispatcher (God Pool Multi-Provider v2)
  * ─────────────────────────────────────────────────────────────────────────────
  * Proxy interno de inferência resiliente com Round-Robin e Failover Automático.
- * Se um provider retornar 401 (chave inválida), 429 (rate limit) ou 5xx/timeout,
- * o dispatcher redireciona a requisição instantaneamente para o próximo da fila.
+ * Suporta múltiplas chaves por provedor (separadas por vírgula ou individuais).
+ * Se um provider retornar 401, 429 ou 5xx/timeout, rotaciona instantaneamente.
  *
- * Suporta: Groq, Google AI Studio (Gemini), SambaNova, OpenRouter, Cerebras.
+ * Suporta: Groq (Multi-Key), Google Gemini (Multi-Key), SambaNova, OpenRouter.
  */
 
 const axios = require('axios');
 const { logger } = require('@librechat/data-schemas');
 
 /**
- * Retorna a lista dinâmica de provedores baseada nas chaves configuradas nas envs
+ * Monta a lista completa de provedores a partir das variáveis de ambiente
  */
 function getActiveProviders() {
   const providers = [];
 
-  // 1. Groq (Ultra-baixa latência)
-  if (process.env.GROQ_API_KEY) {
+  // ── 1. GROQ POOL (Multi-Key Round-Robin) ──
+  // Aceita GROQ_API_KEYS (vírgula) ou GROQ_API_KEY única
+  const rawGroq = process.env.GROQ_API_KEYS || process.env.GROQ_API_KEY || '';
+  const groqKeys = rawGroq.split(',').map(k => k.trim()).filter(Boolean);
+  const groqModel = process.env.GROQ_MODEL || 'qwen/qwen3.8-27b';
+
+  groqKeys.forEach((key, idx) => {
     providers.push({
-      id: 'groq',
-      name: 'Groq Cloud',
+      id: `groq-${idx + 1}`,
+      name: `Groq Cloud (#${idx + 1})`,
+      type: 'openai-compatible',
       baseURL: 'https://api.groq.com/openai/v1/chat/completions',
-      apiKey: process.env.GROQ_API_KEY,
-      model: process.env.GROQ_MODEL || 'qwen/qwen3.8-27b',
+      apiKey: key,
+      model: groqModel,
       headers: {
-        'Authorization': `Bearer ${process.env.GROQ_API_KEY}`,
+        'Authorization': `Bearer ${key}`,
         'Content-Type': 'application/json',
       },
       timeoutMs: 15000,
     });
-  }
+  });
 
-  // 2. Google AI Studio (Gemini 2.5 Flash — altíssima inteligência e cota generosa)
-  if (process.env.GEMINI_API_KEY) {
+  // ── 2. GOOGLE GEMINI POOL (Multi-Key) ──
+  const rawGemini = process.env.GEMINI_API_KEYS || process.env.GEMINI_API_KEY || '';
+  const geminiKeys = rawGemini.split(',').map(k => k.trim()).filter(Boolean);
+  const geminiModel = process.env.GEMINI_MODEL || 'gemini-flash-latest';
+
+  geminiKeys.forEach((key, idx) => {
     providers.push({
-      id: 'google',
-      name: 'Google AI Studio (Gemini)',
-      baseURL: 'https://generativelanguage.googleapis.com/v1beta/openai/chat/completions',
-      apiKey: process.env.GEMINI_API_KEY,
-      model: process.env.GEMINI_MODEL || 'gemini-2.5-flash',
+      id: `gemini-${idx + 1}`,
+      name: `Google Gemini (#${idx + 1})`,
+      type: 'gemini-native',
+      baseURL: `https://generativelanguage.googleapis.com/v1beta/models/${geminiModel}:generateContent?key=${key}`,
+      apiKey: key,
+      model: geminiModel,
       headers: {
-        'Authorization': `Bearer ${process.env.GEMINI_API_KEY}`,
         'Content-Type': 'application/json',
       },
       timeoutMs: 20000,
     });
-  }
+  });
 
-  // 3. SambaNova (Llama 3.3 70B em chips RDU)
-  if (process.env.SAMBANOVA_API_KEY) {
+  // ── 3. SAMBANOVA POOL ──
+  const rawSamba = process.env.SAMBANOVA_API_KEYS || process.env.SAMBANOVA_API_KEY || '';
+  const sambaKeys = rawSamba.split(',').map(k => k.trim()).filter(Boolean);
+  const sambaModel = process.env.SAMBANOVA_MODEL || 'Meta-Llama-3.3-70B-Instruct';
+
+  sambaKeys.forEach((key, idx) => {
     providers.push({
-      id: 'sambanova',
-      name: 'SambaNova Cloud',
+      id: `sambanova-${idx + 1}`,
+      name: `SambaNova (#${idx + 1})`,
+      type: 'openai-compatible',
       baseURL: 'https://api.sambanova.ai/v1/chat/completions',
-      apiKey: process.env.SAMBANOVA_API_KEY,
-      model: process.env.SAMBANOVA_MODEL || 'Meta-Llama-3.3-70B-Instruct',
+      apiKey: key,
+      model: sambaModel,
       headers: {
-        'Authorization': `Bearer ${process.env.SAMBANOVA_API_KEY}`,
+        'Authorization': `Bearer ${key}`,
         'Content-Type': 'application/json',
       },
       timeoutMs: 20000,
     });
-  }
+  });
 
-  // 4. OpenRouter (Fallback gratuito)
-  if (process.env.OPENROUTER_API_KEY) {
+  // ── 4. OPENROUTER POOL (Fallback) ──
+  const rawOr = process.env.OPENROUTER_API_KEYS || process.env.OPENROUTER_API_KEY || '';
+  const orKeys = rawOr.split(',').map(k => k.trim()).filter(Boolean);
+  const orModel = process.env.OPENROUTER_MODEL || 'nvidia/nemotron-3-ultra-550b-a55b:free';
+
+  orKeys.forEach((key, idx) => {
     providers.push({
-      id: 'openrouter',
-      name: 'OpenRouter Free Pool',
+      id: `openrouter-${idx + 1}`,
+      name: `OpenRouter (#${idx + 1})`,
+      type: 'openai-compatible',
       baseURL: 'https://openrouter.ai/api/v1/chat/completions',
-      apiKey: process.env.OPENROUTER_API_KEY,
-      model: process.env.OPENROUTER_MODEL || 'nvidia/nemotron-3-ultra-550b-a55b:free',
+      apiKey: key,
+      model: orModel,
       headers: {
-        'Authorization': `Bearer ${process.env.OPENROUTER_API_KEY}`,
+        'Authorization': `Bearer ${key}`,
         'Content-Type': 'application/json',
         'HTTP-Referer': 'https://aida.experiasolutions.com.br',
         'X-Title': 'AIDA Imersão',
       },
       timeoutMs: 20000,
     });
-  }
+  });
 
   return providers;
 }
@@ -89,14 +109,30 @@ function getActiveProviders() {
 let currentProviderIndex = 0;
 
 /**
- * Executa uma inferência com failover automático entre os provedores ativos
- * @param {Object} options
- * @param {Array} options.messages - Lista de mensagens [{role, content}]
- * @param {number} [options.temperature=0.7]
- * @param {number} [options.maxTokens=800]
- * @returns {Promise<{reply: string, provider: string, model: string, durationMs: number}>}
+ * Converte mensagens para o formato nativo do Google Gemini
  */
-async function dispatchChatCompletion({ messages, temperature = 0.7, maxTokens = 800 }) {
+function convertMessagesToGemini(messages) {
+  const contents = [];
+  let systemInstruction = null;
+
+  for (const m of messages) {
+    if (m.role === 'system') {
+      systemInstruction = { parts: [{ text: m.content }] };
+    } else {
+      contents.push({
+        role: m.role === 'assistant' ? 'model' : 'user',
+        parts: [{ text: m.content || '' }],
+      });
+    }
+  }
+
+  return { contents, systemInstruction };
+}
+
+/**
+ * Executa uma inferência com failover automático entre os provedores ativos
+ */
+async function dispatchChatCompletion({ messages, temperature = 0.7, maxTokens = 250 }) {
   const providers = getActiveProviders();
 
   if (providers.length === 0) {
@@ -106,42 +142,66 @@ async function dispatchChatCompletion({ messages, temperature = 0.7, maxTokens =
   const errors = [];
   const totalProviders = providers.length;
 
-  // Tenta todos os provedores em sequência a partir do índice atual
   for (let attempt = 0; attempt < totalProviders; attempt++) {
     const providerIdx = (currentProviderIndex + attempt) % totalProviders;
     const provider = providers[providerIdx];
     const startTime = Date.now();
 
     try {
-      logger.info(`[LLM Dispatcher] Tentando inferência via ${provider.name} (model: ${provider.model})...`);
+      logger.info(`[LLM Dispatcher] [${attempt + 1}/${totalProviders}] Tentando ${provider.name} (${provider.model})...`);
 
-      const response = await axios.post(
-        provider.baseURL,
-        {
-          model: provider.model,
-          messages,
-          temperature,
-          max_tokens: maxTokens,
-        },
-        {
+      let reply = '';
+
+      if (provider.type === 'gemini-native') {
+        const { contents, systemInstruction } = convertMessagesToGemini(messages);
+        const payload = {
+          contents,
+          generationConfig: {
+            temperature,
+            maxOutputTokens: maxTokens,
+          },
+        };
+        if (systemInstruction) {
+          payload.systemInstruction = systemInstruction;
+        }
+
+        const response = await axios.post(provider.baseURL, payload, {
           headers: provider.headers,
           timeout: provider.timeoutMs,
-        }
-      );
+        });
 
-      const reply = response.data?.choices?.[0]?.message?.content;
-      if (!reply) {
-        throw new Error('Resposta vazia da API do provedor.');
+        reply = response.data?.candidates?.[0]?.content?.parts?.[0]?.text;
+      } else {
+        // OpenAI-compatible (Groq, SambaNova, OpenRouter)
+        const response = await axios.post(
+          provider.baseURL,
+          {
+            model: provider.model,
+            messages,
+            temperature,
+            max_tokens: maxTokens,
+          },
+          {
+            headers: provider.headers,
+            timeout: provider.timeoutMs,
+          }
+        );
+
+        reply = response.data?.choices?.[0]?.message?.content;
+      }
+
+      if (!reply || !reply.trim()) {
+        throw new Error('Provedor retornou resposta vazia.');
       }
 
       const durationMs = Date.now() - startTime;
       logger.info(`[LLM Dispatcher] Sucesso via ${provider.name} em ${durationMs}ms`);
 
-      // Avança o round-robin suavemente para a próxima requisição
+      // Avança o cursor para a próxima requisição rodar no próximo nó
       currentProviderIndex = (providerIdx + 1) % totalProviders;
 
       return {
-        reply,
+        reply: reply.trim(),
         provider: provider.name,
         model: provider.model,
         durationMs,
@@ -151,20 +211,17 @@ async function dispatchChatCompletion({ messages, temperature = 0.7, maxTokens =
       const errMsg = err.response?.data?.error?.message || err.message;
       const durationMs = Date.now() - startTime;
 
-      logger.warn(`[LLM Dispatcher] Falha no ${provider.name} (${statusCode || 'TIMEOUT'} em ${durationMs}ms): ${errMsg}. Acionando failover...`);
+      logger.warn(`[LLM Dispatcher] Falha no ${provider.name} (${statusCode || 'ERR'} em ${durationMs}ms): ${errMsg}. Failover...`);
 
       errors.push({
         provider: provider.name,
         status: statusCode,
         error: errMsg,
       });
-
-      // Continua para o próximo provedor na lista
     }
   }
 
-  // Se todos os provedores falharem
-  logger.error('[LLM Dispatcher] Todos os provedores do pool falharam!', errors);
+  logger.error('[LLM Dispatcher] Todos os provedores falharam!', errors);
   throw new Error(`[LLM Dispatcher] Todos os ${totalProviders} provedores falharam: ${errors.map(e => `${e.provider} (${e.status})`).join(', ')}`);
 }
 
