@@ -64,6 +64,9 @@ if (fs.existsSync(assetsDir)) {\
       content = content.replace(/'LibreChat'/g, \"'AIDA'\");\
       content = content.replace(/\x60LibreChat\x60/g, '\x60AIDA\x60');\
       content = content.replace(/>LibreChat</g, '>AIDA<');\
+      content = content.replace(/Shared via LibreChat/gi, 'Compartilhado via AIDA');\
+      content = content.replace(/Powered by LibreChat/gi, 'Powered by AIDA');\
+      content = content.replace(/LibreChat/g, 'AIDA');\
       fs.writeFileSync(filePath, content);\
     }\
   }\

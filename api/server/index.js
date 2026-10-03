@@ -1,4 +1,4 @@
-﻿const telemetry = require('./telemetry');
+const telemetry = require('./telemetry');
 const fs = require('fs');
 const path = require('path');
 require('module-alias')({ base: path.resolve(__dirname, '..') });
@@ -121,22 +121,39 @@ function enhanceHtmlWithAida(html) {
 
   html = html.replace(/<head>/i, `<head>${aidaMetaTags}`);
 
-  // 4. Injetar Title Enforcer leve e seguro (sem quebrar o React SPA)
+  // 4. Injetar Title & Brand Enforcer para AIDA (elimina resquícios de LibreChat no rodapé/share)
   const aidaTitleScript = `
-    <!-- AIDA Canonical Branding & Title Enforcer -->
+    <!-- AIDA Canonical Branding & Footer Enforcer -->
     <script>
       (function() {
-        var canonicalTitle = 'AIDA â€” Aprenda InglÃªs por ImersÃ£o Ativa';
+        var canonicalTitle = 'AIDA — Aprenda Inglês por Imersão Ativa';
         document.title = canonicalTitle;
-        var observer = new MutationObserver(function() {
+
+        function sanitizeBrand() {
           if (document.title !== canonicalTitle && !document.title.includes('AIDA')) {
             document.title = canonicalTitle;
           }
-        });
-        var titleNode = document.querySelector('title');
-        if (titleNode) {
-          observer.observe(titleNode, { subtree: true, characterData: true, childList: true });
+          // Substitui menções a LibreChat em rodapés, links e elementos da página
+          var elements = document.querySelectorAll('footer, a, span, p, div');
+          for (var i = 0; i < elements.length; i++) {
+            var el = elements[i];
+            if (el.children.length === 0 && el.textContent && el.textContent.includes('LibreChat')) {
+              el.textContent = el.textContent.replace(/LibreChat/g, 'AIDA');
+            }
+            if (el.tagName === 'A' && el.href && (el.href.includes('librechat.ai') || el.href.includes('danny-avila'))) {
+              el.href = 'https://aida.experiasolutions.com.br';
+              if (el.textContent && el.textContent.includes('AIDA')) {
+                // Mantém
+              } else {
+                el.textContent = 'AIDA — Imersão Ativa em Inglês com IA';
+              }
+            }
+          }
         }
+
+        sanitizeBrand();
+        var observer = new MutationObserver(sanitizeBrand);
+        observer.observe(document.documentElement, { subtree: true, characterData: true, childList: true });
       })();
     </script>
   `;
