@@ -1,4 +1,4 @@
-/**
+﻿/**
  * aidaTutor.js
  * Rota dedicada ao Meta Agente AIDA — Tutora & Mentora Mestra do My MANA Hub
  * 
@@ -49,43 +49,15 @@ router.post('/chat', async (req, res) => {
       { role: 'user', content: message },
     ];
 
-    // Chamada ao qwen3.8-27b via Groq (modelo disponível nessa conta)
-    const apiKey = process.env.GROQ_API_KEY || process.env.OPENAI_API_KEY;
-    const apiUrl = process.env.GROQ_API_KEY 
-      ? 'https://api.groq.com/openai/v1/chat/completions' 
-      : 'https://api.openai.com/v1/chat/completions';
-    const model = process.env.GROQ_API_KEY 
-      ? 'qwen/qwen3.8-27b'
-      : 'gpt-4o-mini';
+        // Chamada resiliente via KAIROS LLM Dispatcher (Groq, Gemini, SambaNova, OpenRouter)
+    const { dispatchChatCompletion } = require('../services/llmDispatcher');
+    const result = await dispatchChatCompletion({
+      messages,
+      temperature: 0.7,
+      maxTokens: 250,
+    });
 
-    if (!apiKey) {
-      // Fallback gracioso local caso a key não esteja injetada em dev
-      return res.json({
-        reply: `Olá! Eu sou a AIDA, sua tutora no método MANA! 🌟
-Lembre-se da nossa regra de ouro: você não estuda para falar, você fala para aprender.
-Como posso te ajudar hoje a navegar pelos 5 Portais da Montanha B2?`,
-      });
-    }
-
-    const response = await axios.post(
-      apiUrl,
-      {
-        model,
-        messages,
-        temperature: 0.7,
-        max_tokens: 250,
-      },
-      {
-        headers: {
-          'Content-Type': 'application/json',
-          Authorization: `Bearer ${apiKey}`,
-        },
-        timeout: 20000,
-      }
-    );
-
-    const reply = response.data?.choices?.[0]?.message?.content || 'Continue em frente na sua jornada de fluência!';
-    return res.json({ reply });
+    return res.json({ reply: result.reply, provider: result.provider });
   } catch (error) {
     console.error('[AIDA Tutor] Erro na resposta da tutora:', error?.response?.data || error.message);
     return res.status(500).json({
