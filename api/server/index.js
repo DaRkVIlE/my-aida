@@ -278,6 +278,9 @@ const startServer = async () => {
   app.use('/oauth', preAuthTenantMiddleware, routes.oauth);
   /* API Endpoints */
   app.use('/api/auth', preAuthTenantMiddleware, routes.auth);
+  /* AIDA SSO Handoff */
+  app.use('/api/auth', routes.aidaHandoff);
+  app.use('/start', routes.aidaHandoff);
   app.use('/api/admin', routes.adminAuth);
   app.use('/api/admin/config', routes.adminConfig);
   app.use('/api/admin/grants', routes.adminGrants);

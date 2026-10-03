@@ -37,8 +37,10 @@ const rum = require('./rum');
 const gamification = require('./aida_gamification');
 const manaProfile = require('./manaProfile');
 const aidaTutor = require('./aidaTutor');
+const aidaHandoff = require('./aidaHandoff');
 
 module.exports = {
+  aidaHandoff,
   aidaTutor,
   manaProfile,
   gamification,
