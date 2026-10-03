@@ -1,4 +1,4 @@
-const telemetry = require('./telemetry');
+﻿const telemetry = require('./telemetry');
 const fs = require('fs');
 const path = require('path');
 require('module-alias')({ base: path.resolve(__dirname, '..') });
@@ -235,7 +235,7 @@ const startServer = async () => {
   });
 
   app.use(mongoSanitize());
-  app.use(cors());
+  app.use(cors({ origin: true, credentials: true }));
   app.use(cookieParser());
 
   if (!isEnabled(DISABLE_COMPRESSION)) {
