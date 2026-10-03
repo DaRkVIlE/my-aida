@@ -73,7 +73,7 @@ Como posso te ajudar hoje a navegar pelos 5 Portais da Montanha B2?`,
         model,
         messages,
         temperature: 0.7,
-        max_tokens: 800,
+        max_tokens: 250,
       },
       {
         headers: {
