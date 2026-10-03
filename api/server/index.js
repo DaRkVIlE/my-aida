@@ -82,8 +82,8 @@ const configureGenerationStreams = () => {
 };
 
 /**
- * Injeta metadados canônicos da AIDA, OpenGraph completo para WhatsApp/Telegram,
- * Title Enforcer imutável e o Player HUD do MANA 3.0 diretamente no index.html servido pelo servidor.
+ * Injeta metadados canÃ´nicos da AIDA, OpenGraph completo para WhatsApp/Telegram,
+ * Title Enforcer imutÃ¡vel e o Player HUD do MANA 3.0 diretamente no index.html servido pelo servidor.
  */
 function enhanceHtmlWithAida(html) {
   if (!html || typeof html !== 'string') {
@@ -92,30 +92,30 @@ function enhanceHtmlWithAida(html) {
 
   const gabeWhatsAppNumber = process.env.GABE_WHATSAPP_NUMBER || '5511967239791';
 
-  // 1. Forçar título canônico da AIDA
-  html = html.replace(/<title>[\s\S]*?<\/title>/gi, '<title>AIDA — Aprenda Inglês por Imersão Ativa</title>');
+  // 1. ForÃ§ar tÃ­tulo canÃ´nico da AIDA
+  html = html.replace(/<title>[\s\S]*?<\/title>/gi, '<title>AIDA â€” Aprenda InglÃªs por ImersÃ£o Ativa</title>');
 
   // 2. Limpar meta tags antigas de OpenGraph, Twitter e Description
   html = html.replace(/<meta\s+property="og:[^"]*"[^>]*>/gi, '');
   html = html.replace(/<meta\s+name="twitter:[^"]*"[^>]*>/gi, '');
   html = html.replace(/<meta\s+name="description"[^>]*>/gi, '');
 
-  // 3. Injetar metadados canônicos da AIDA
+  // 3. Injetar metadados canÃ´nicos da AIDA
   const aidaMetaTags = `
-    <meta name="description" content="AIDA — Aprenda inglês por imersão ativa com tutores de IA. Sem aulas chatas, sem gramática decorada. Conversação real desde o primeiro dia." />
+    <meta name="description" content="AIDA â€” Aprenda inglÃªs por imersÃ£o ativa com tutores de IA. Sem aulas chatas, sem gramÃ¡tica decorada. ConversaÃ§Ã£o real desde o primeiro dia." />
     <meta property="og:type" content="website" />
     <meta property="og:site_name" content="AIDA" />
     <meta property="og:url" content="https://aida.experiasolutions.com.br" />
-    <meta property="og:title" content="AIDA — Aprenda Inglês por Imersão Ativa" />
-    <meta property="og:description" content="Converse com tutores de IA especializados e aprenda inglês do jeito que o cérebro foi feito para aprender — por imersão ativa." />
+    <meta property="og:title" content="AIDA â€” Aprenda InglÃªs por ImersÃ£o Ativa" />
+    <meta property="og:description" content="Converse com tutores de IA especializados e aprenda inglÃªs do jeito que o cÃ©rebro foi feito para aprender â€” por imersÃ£o ativa." />
     <meta property="og:image" content="https://aida.experiasolutions.com.br/assets/aida-og.png" />
     <meta property="og:image:width" content="1200" />
     <meta property="og:image:height" content="630" />
-    <meta property="og:image:alt" content="AIDA — Plataforma de Imersão em Inglês com IA" />
+    <meta property="og:image:alt" content="AIDA â€” Plataforma de ImersÃ£o em InglÃªs com IA" />
     <meta property="og:locale" content="pt_BR" />
     <meta name="twitter:card" content="summary_large_image" />
-    <meta name="twitter:title" content="AIDA — Aprenda Inglês por Imersão Ativa" />
-    <meta name="twitter:description" content="Converse com tutores de IA especializados e aprenda inglês por imersão ativa." />
+    <meta name="twitter:title" content="AIDA â€” Aprenda InglÃªs por ImersÃ£o Ativa" />
+    <meta name="twitter:description" content="Converse com tutores de IA especializados e aprenda inglÃªs por imersÃ£o ativa." />
     <meta name="twitter:image" content="https://aida.experiasolutions.com.br/assets/aida-og.png" />
   `;
 
@@ -126,7 +126,7 @@ function enhanceHtmlWithAida(html) {
     <!-- AIDA Canonical Branding & Title Enforcer -->
     <script>
       (function() {
-        var canonicalTitle = 'AIDA — Aprenda Inglês por Imersão Ativa';
+        var canonicalTitle = 'AIDA â€” Aprenda InglÃªs por ImersÃ£o Ativa';
         document.title = canonicalTitle;
         var observer = new MutationObserver(function() {
           if (document.title !== canonicalTitle && !document.title.includes('AIDA')) {
@@ -168,13 +168,13 @@ const startServer = async () => {
   if (isEnabled(process.env.TENANT_ISOLATION_STRICT)) {
     logger.warn(
       '[Security] TENANT_ISOLATION_STRICT is active. Ensure your reverse proxy strips or sets ' +
-        'the X-Tenant-Id header — untrusted clients must not be able to set it directly.',
+        'the X-Tenant-Id header â€” untrusted clients must not be able to set it directly.',
     );
   }
 
   await runAsSystem(seedDatabase);
   /* Recover stuck `status: 'pending'` records from a crash mid-render.
-   * `runAsSystem` is required — `File` is tenant-isolated and strict
+   * `runAsSystem` is required â€” `File` is tenant-isolated and strict
    * mode rejects unscoped queries. Lazy sweep in the preview endpoint
    * covers anything younger than the boot cutoff. */
   runAsSystem(sweepOrphanedPreviews).catch((err) => {
@@ -270,7 +270,7 @@ const startServer = async () => {
     await configureSocialLogins(app);
   }
 
-  /* Per-request capability cache — must be registered before any route that calls hasCapability */
+  /* Per-request capability cache â€” must be registered before any route that calls hasCapability */
   app.use(capabilityContextMiddleware);
 
   /* Pre-auth tenant context for unauthenticated routes that need tenant scoping.
@@ -325,10 +325,18 @@ const startServer = async () => {
   const { getTriagemHtml } = require('./routes/triagemLanding');
   const gabeWaNumber = process.env.GABE_WHATSAPP_NUMBER || '5511967239791';
 
-  /** Rota explícita e ultra-rápida da Landing Page & Triagem MANA 3.0 */
+  /** Rota explÃ­cita e ultra-rÃ¡pida da Landing Page & Triagem MANA 3.0 */
   app.get(['/triagem', '/quiz', '/diagnostico'], (req, res) => {
     res.setHeader('Content-Type', 'text/html; charset=utf-8');
     res.send(getTriagemHtml(gabeWaNumber));
+  });
+
+  const { getCockpitHtml } = require('./routes/cockpitPanel');
+
+  /** Cockpit do Aluno — Painel de progresso MANA, XP, Streak e Portais */
+  app.get(['/cockpit', '/painel', '/progresso'], (req, res) => {
+    res.setHeader('Content-Type', 'text/html; charset=utf-8');
+    res.send(getCockpitHtml());
   });
 
   /** SPA fallback - serve index.html for all unmatched routes */
@@ -376,7 +384,7 @@ const startServer = async () => {
      * catches errors that happen before `app.listen`). Without explicit
      * handling, the global `unhandledRejection` handler would swallow init
      * failures and leave the server listening but only partially
-     * initialized — passing liveness checks while serving broken requests.
+     * initialized â€” passing liveness checks while serving broken requests.
      */
     try {
       await runAsSystem(async () => {
@@ -477,7 +485,7 @@ process.on('uncaughtException', (err) => {
  * Node 15+ terminates the process by default when a promise rejection is
  * unhandled. MCP OAuth reconnect storms and streamable-HTTP transport resets
  * can produce transient fire-and-forget rejections (ECONNRESET, token refresh
- * races) that are recoverable — the server should log and keep serving other
+ * races) that are recoverable â€” the server should log and keep serving other
  * requests rather than silently crash under load.
  *
  * Non-Error reasons are forwarded as-is so structured payloads (e.g.
