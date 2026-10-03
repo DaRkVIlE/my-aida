@@ -83,6 +83,7 @@ ENV PORT=8080
 ENV APP_TITLE=AIDA
 ENV HELP_AND_FAQ_URL=https://experiasolutions.com.br
 ENV CUSTOM_FOOTER="[AIDA](https://aida.experiasolutions.com.br) — Imersão Ativa em Inglês com IA"
+ENV ALLOW_SHARED_LINKS_PUBLIC=true
 EXPOSE 8080
 
 CMD ["npm", "run", "backend"]
