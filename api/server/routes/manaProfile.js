@@ -1,4 +1,4 @@
-const express = require('express');
+﻿const express = require('express');
 const Gamification = require('~/models/Gamification');
 const { requireJwtAuth } = require('~/server/middleware/');
 
@@ -102,33 +102,137 @@ router.get('/leaderboard', async (req, res) => {
  * POST /api/mana/triage
  * Registra o resultado da triagem pré-chat realizada na Landing Page / Onboarding
  */
-router.post('/triage', requireJwtAuth, async (req, res) => {
+/**
+ * POST /api/mana/triage
+ * Registra ou calcula o resultado do Quiz de Nivelamento CEFR & Triagem MANA (P1 a P5).
+ * Suporta modo duplo:
+ *   - Anônimo (Visitante na Landing Page): Retorna diagnóstico, persona recomendada e dados do portal.
+ *   - Autenticado (Aluno Logado com JWT): Persiste no MongoDB e credita 50 XP bônus imediatamente.
+ */
+router.post('/triage', async (req, res) => {
   try {
-    const userId = req.user.id;
-    const { nivelDiagnosticado, personaIdeal, painState } = req.body;
+    const { nivelDiagnosticado, personaIdeal, answers, score, cefrLevel } = req.body;
 
-    let stats = await Gamification.findOne({ user: userId });
-    if (!stats) {
-      stats = new Gamification({
-        user: userId,
-        nivelDiagnosticado: nivelDiagnosticado || 'P1',
-        personaIdeal: personaIdeal || 'Jordan',
-        totalXp: 50, // Bônus de 50 XP por concluir a triagem
-        currentXp: 50,
-        playerRank: 'E',
-      });
-    } else {
-      if (nivelDiagnosticado) stats.nivelDiagnosticado = nivelDiagnosticado;
-      if (personaIdeal) stats.personaIdeal = personaIdeal;
-      stats.currentXp = (stats.currentXp || 0) + 50;
-      stats.totalXp = (stats.totalXp || 0) + 50;
+    // Mapa oficial pedagógico MANA 3.0
+    const PORTAL_META = {
+      P1: {
+        portalNumber: 1,
+        portalName: 'O Descongelamento',
+        cefrRange: 'A1 → A2',
+        persona: 'Jordan',
+        personaLabel: 'Jordan — Amigo de NY',
+        personaDescription: 'Papo leve, séries, cultura pop e dia a dia sem regras chatas.',
+        welcomeHook: 'E aí! Vi que você quer destravar sem pressão. Vamos bater um papo no automático!',
+        unlockedAtStart: true,
+      },
+      P2: {
+        portalNumber: 2,
+        portalName: 'O Motor do BICS',
+        cefrRange: 'A2 → B1',
+        persona: 'Miles',
+        personaLabel: 'Miles — Gamer & Tech',
+        personaDescription: 'Games, Discord, tecnologia e gírias da internet.',
+        welcomeHook: 'Fala dev! Bora trocar uma ideia sobre games, tech e cultura geek em inglês?',
+        unlockedAtStart: true,
+      },
+      P3: {
+        portalNumber: 3,
+        portalName: 'A Tração Conversacional',
+        cefrRange: 'B1 → B2',
+        persona: 'Zack',
+        personaLabel: 'Zack — Coach de Rotina',
+        personaDescription: 'Fitness, produtividade, hábitos diários e energia alta.',
+        welcomeHook: 'Bora manter a consistência! Me conta da sua rotina e vamos construir esse vocabulário ativo.',
+        unlockedAtStart: true,
+      },
+      P4: {
+        portalNumber: 4,
+        portalName: 'A Fronteira Executiva',
+        cefrRange: 'B2 Pleno',
+        persona: 'Alexandra',
+        personaLabel: 'Alexandra — Business & Carreira',
+        personaDescription: 'Reuniões internacionais, apresentações, e-mails e negociação.',
+        welcomeHook: 'Olá. Vamos afiar sua comunicação para o mercado corporativo internacional.',
+        unlockedAtStart: true,
+      },
+      P5: {
+        portalNumber: 5,
+        portalName: 'O Trono da Soberania',
+        cefrRange: 'C1 → C2',
+        persona: 'Hayes',
+        personaLabel: 'Prof. Hayes — Alta Expressão',
+        personaDescription: 'Ideias complexas, visão de mundo, debate intelectual e elegância verbal.',
+        welcomeHook: 'Saudações. É um prazer dialogar sobre grandes ideias e refinar sua maestria no idioma.',
+        unlockedAtStart: true,
+      },
+    };
+
+    // Determina o nível com fallback seguro para P1 (Jordan)
+    const normalizedNivel = (nivelDiagnosticado || 'P1').toUpperCase();
+    const portalData = PORTAL_META[normalizedNivel] || PORTAL_META.P1;
+    const finalPersona = personaIdeal || portalData.persona;
+
+    // Tenta autenticar via JWT se enviado no header Authorization: Bearer <token>
+    let authenticatedUser = null;
+    const authHeader = req.headers.authorization;
+    if (authHeader && authHeader.startsWith('Bearer ')) {
+      const token = authHeader.split(' ')[1];
+      try {
+        const jwt = require('jsonwebtoken');
+        const decoded = jwt.verify(token, process.env.JWT_SECRET);
+        authenticatedUser = decoded;
+      } catch (jwtErr) {
+        // Token inválido ou expirado - processa como visitante sem derrubar a requisição
+      }
     }
 
-    await stats.save();
-    res.json({ success: true, profile: stats });
+    // Se estiver autenticado, persiste no MongoDB
+    if (authenticatedUser && authenticatedUser.id) {
+      let stats = await Gamification.findOne({ user: authenticatedUser.id });
+      if (!stats) {
+        stats = new Gamification({
+          user: authenticatedUser.id,
+          nivelDiagnosticado: normalizedNivel,
+          personaIdeal: finalPersona,
+          totalXp: 50,
+          currentXp: 50,
+          playerRank: 'E',
+          history: [{ xp: 50, date: new Date(), messageId: 'quiz_onboarding_bonus' }],
+        });
+      } else {
+        stats.nivelDiagnosticado = normalizedNivel;
+        stats.personaIdeal = finalPersona;
+        // Bônus único de 50 XP
+        stats.currentXp = (stats.currentXp || 0) + 50;
+        stats.totalXp = (stats.totalXp || 0) + 50;
+        stats.history.push({ xp: 50, date: new Date(), messageId: 'quiz_onboarding_bonus' });
+      }
+      await stats.save();
+
+      return res.json({
+        success: true,
+        isGuest: false,
+        nivelDiagnosticado: normalizedNivel,
+        personaIdeal: finalPersona,
+        portal: portalData,
+        bonusXpGranted: 50,
+        profile: stats,
+      });
+    }
+
+    // Caso visitante (anônimo na Landing Page / Quiz)
+    return res.json({
+      success: true,
+      isGuest: true,
+      nivelDiagnosticado: normalizedNivel,
+      personaIdeal: finalPersona,
+      portal: portalData,
+      bonusXpPending: 50,
+      message: 'Diagnóstico concluído! Crie sua conta para resgatar seus 50 XP de bônus e entrar no Portal.',
+    });
   } catch (error) {
-    console.error('[MANA] Error saving triage result:', error);
-    res.status(500).json({ message: 'Error saving triage result' });
+    console.error('[MANA] Error processing triage:', error);
+    res.status(500).json({ message: 'Error processing triage' });
   }
 });
 
