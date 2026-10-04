@@ -1,4 +1,4 @@
-/**
+﻿/**
  * AIDA SSO Handoff Routes
  * ─────────────────────────────────────────────────────────────────────────────
  * Permite que o AIDA Hub (domínio externo) autentique o aluno e abra o Chat
@@ -16,12 +16,12 @@ const express = require('express');
 const jwt = require('jsonwebtoken');
 const bcrypt = require('bcryptjs');
 const { logger } = require('@librechat/data-schemas');
-const { findUser, getUserById } = require('~/models');
+const { findUser, getUserById, updateUser } = require('~/models');
 const { setAuthTokens } = require('~/server/services/AuthService');
 
 const router = express.Router();
 
-const ALLOWED_PERSONAS = ['jordan', 'zack', 'miles', 'alexandra', 'hayes'];
+const ALLOWED_PERSONAS = ['jordan', 'zack', 'miles', 'alexandra', 'hayes', 'aida', 'aida-admin'];
 const AIDA_HUB_ORIGIN = process.env.AIDA_HUB_ORIGIN || 'https://aida-hub-production-b723.up.railway.app';
 
 /**
@@ -47,6 +47,15 @@ router.post('/hub-login', async (req, res) => {
     const passwordMatch = await bcrypt.compare(password, user.password);
     if (!passwordMatch) {
       return res.status(401).json({ message: 'Credenciais inválidas.' });
+    }
+
+    // Auto-elevação para ADMIN se o email for do Gabe (ADMIN_EMAILS ou emails canônicos)
+    const adminEmails = (process.env.ADMIN_EMAILS || 'experiatecnologias@gmail.com,reasonablegabriel@gmail.com,gabrielreasonable4@gmail.com')
+      .split(',').map(e => e.trim().toLowerCase());
+    if (adminEmails.includes(email.toLowerCase()) && user.role !== 'ADMIN') {
+      await updateUser(user._id.toString(), { role: 'ADMIN' });
+      user.role = 'ADMIN';
+      logger.info(`[aidaHandoff] Auto-promovido para ADMIN: ${email}`);
     }
 
     // Gera o JWT de acesso sem precisar setar cookies (cross-domain safe)
