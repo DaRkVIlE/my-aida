@@ -1,4 +1,4 @@
-﻿/**
+/**
  * aidaTutor.js
  * Rota dedicada ao Meta Agente AIDA — Tutora & Mentora Mestra do My MANA Hub
  * 
@@ -56,6 +56,16 @@ router.post('/chat', async (req, res) => {
       temperature: 0.7,
       maxTokens: 250,
     });
+
+    // Recompensa de engajamento pedagógico: +XP para o aluno no MANA Hub
+    if (userId) {
+      try {
+        const { recordTurnActivity } = require('../services/manaAcquisition');
+        recordTurnActivity(userId, message);
+      } catch (e) {
+        // fire-and-forget
+      }
+    }
 
     return res.json({ reply: result.reply, provider: result.provider });
   } catch (error) {
