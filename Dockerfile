@@ -26,7 +26,7 @@ html = html.replace(/assets\/favicon-32x32\.png/g, 'assets/logo.svg');\
 html = html.replace(/assets\/favicon-16x16\.png/g, 'assets/logo.svg');\
 html = html.replace(/assets\/apple-touch-icon-180x180\.png/g, 'assets/logo.svg');\
 html = html.replace(/type=\"image\/png\"/g, 'type=\"image/svg+xml\"');\
-const ogTags = '<meta property=\"og:title\" content=\"AIDA — Aprenda Inglês por Imersão Ativa\" />\\n<meta property=\"og:image\" content=\"https://aida.experiasolutions.com.br/assets/aida-og.png\" />\\n<meta property=\"og:description\" content=\"Converse com tutores de IA especializados e aprenda inglês do jeito que o cérebro foi feito para aprender — por imersão.\" />\\n<meta name=\"twitter:card\" content=\"summary_large_image\" />\\n<meta name=\"twitter:image\" content=\"https://aida.experiasolutions.com.br/assets/aida-og.png\" />\\n';\
+const ogTags = '<meta property=\"og:title\" content=\"AIDA — Aprenda Inglês por Imersão Ativa\" />\\n<meta property=\"og:image\" content=\"https://lexi-moodle-docker-production.up.railway.app/assets/aida-og.png\" />\\n<meta property=\"og:description\" content=\"Converse com tutores de IA especializados e aprenda inglês do jeito que o cérebro foi feito para aprender — por imersão.\" />\\n<meta name=\"twitter:card\" content=\"summary_large_image\" />\\n<meta name=\"twitter:image\" content=\"https://lexi-moodle-docker-production.up.railway.app/assets/aida-og.png\" />\\n';\
 html = html.replace('</head>', ogTags + '</head>');\
 fs.writeFileSync(path, html);\
 \
@@ -55,9 +55,9 @@ if (fs.existsSync(assetsDir)) {\
     if (file.endsWith('.js') || file.endsWith('.html') || file.endsWith('.json')) {\
       const filePath = assetsDir + '/' + file;\
       let content = fs.readFileSync(filePath, 'utf8');\
-      content = content.replace(/https:\/\/www\.librechat\.ai/g, 'https://aida.experiasolutions.com.br');\
-      content = content.replace(/https:\/\/librechat\.ai/g, 'https://aida.experiasolutions.com.br');\
-      content = content.replace(/https:\/\/github\.com\/danny-avila\/LibreChat/g, 'https://experiasolutions.com.br');\
+      content = content.replace(/https:\/\/www\.librechat\.ai/g, 'https://lexi-moodle-docker-production.up.railway.app');\
+      content = content.replace(/https:\/\/librechat\.ai/g, 'https://lexi-moodle-docker-production.up.railway.app');\
+      content = content.replace(/https:\/\/github\.com\/danny-avila\/LibreChat/g, 'https://wa.me/5511967239791');\
       content = content.replace(/noreply@librechat\.ai/g, 'noreply@experiasolutions.com.br');\
       content = content.replace(/contact@librechat\.ai/g, 'contato@experiasolutions.com.br');\
       content = content.replace(/\"LibreChat\"/g, '\"AIDA\"');\
@@ -84,8 +84,8 @@ if (fs.existsSync(pkgPath)) {\
 ENV HOST=0.0.0.0
 ENV PORT=8080
 ENV APP_TITLE=AIDA
-ENV HELP_AND_FAQ_URL=https://experiasolutions.com.br
-ENV CUSTOM_FOOTER="[AIDA](https://aida.experiasolutions.com.br) — Imersão Ativa em Inglês com IA"
+ENV HELP_AND_FAQ_URL=https://wa.me/5511967239791
+ENV CUSTOM_FOOTER="[LexiQuest](https://lexi-moodle-docker-production.up.railway.app) — Imersão SPARK com Professor Gabe"
 ENV ALLOW_SHARED_LINKS_PUBLIC=true
 EXPOSE 8080
 

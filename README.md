@@ -1,7 +1,7 @@
 # AIDA — Hub de Tutores Imersivos de Inglês com IA
 > Powered by Portkey · Hospedado em Railway · Domínio: aida.experiasolutions.com.br
 
-**AIDA** (Aquisição Imersiva Dinâmica Acelerada) é uma plataforma web de chat com IA para aprendizado de inglês por imersão, seguindo o **Método AIDA** criado por Gabriel Ferreira (Experia Solutions).
+**AIDA** (Aquisição Imersiva Dinâmica Acelerada) é uma plataforma web de chat com IA para aprendizado de inglês por imersão, seguindo o **Método AIDA** criado por Gabriel Lima (Experia Solutions).
 
 ## ⚡ Stack
 - **Frontend/Backend:** Motor de chat com IA de código aberto (customizado)

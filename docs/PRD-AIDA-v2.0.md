@@ -55,7 +55,7 @@
 
 ### 1.2 Background Context
 
-Gabriel Ferreira é professor de inglês autônomo que desenvolveu empiricamente o Método MANA — chegando às mesmas conclusões de Krashen (Input Hypothesis) e Cummins (BICS/CALP) sem conhecê-los formalmente. O método tem comprovação prática: fluência conversacional em 6-8 meses vs 2-3 anos dos métodos tradicionais, com menor ansiedade e maior adesão.
+Gabriel Lima é professor de inglês autônomo que desenvolveu empiricamente o Método MANA — chegando às mesmas conclusões de Krashen (Input Hypothesis) e Cummins (BICS/CALP) sem conhecê-los formalmente. O método tem comprovação prática: fluência conversacional em 6-8 meses vs 2-3 anos dos métodos tradicionais, com menor ansiedade e maior adesão.
 
 O gap crítico sempre foi a dependência de Gabriel para personalização e suporte entre aulas. O produto MANA resolve exatamente esse gap: um agente de IA chamado **AIDA** (Adaptive Immersive Daily Acquisition) que replica as condições de imersão que Gabriel criava manualmente, disponível via LibreChat, a custo marginal zero por aluno.
 
