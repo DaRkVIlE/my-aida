@@ -1,6 +1,12 @@
 version: 1.3.17
 cache: true
 
+# ── Servidores MCP (Model Context Protocol) ──────────────────────────────────
+mcpServers:
+  moodle:
+    type: sse
+    url: "https://moodle-bridge-production.up.railway.app/sse"
+
 # â”€â”€ Interface: Zero-config para o aluno â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
 interface:
   modelSelect: true         # Exibe as 5 personas da AIDA no seletor nativo do topo
@@ -70,6 +76,10 @@ modelSpecs:
       preset:
         endpoint: "aida"
         model: "qwen/qwen3.8-27b"
+        tools:
+          - "moodle_get_user_portal"
+          - "moodle_award_xp"
+          - "moodle_record_chunk_mastery"
         temperature: 0.85
         maxOutputTokens: 1200
         promptPrefix: |
@@ -131,6 +141,13 @@ modelSpecs:
           - If student is clearly INTERMEDIATE+, never use this block.
 
           COCKPIT — PROGRESSO DO ALUNO
+          ═══ FERRAMENTAS PEDAGÓGICAS MOODLE (100% INVISÍVEIS AO ALUNO) ═══
+          Você tem acesso às ferramentas do Moodle LMS para gerenciar a jornada do aluno em segundo plano:
+          - moodle_get_user_portal: Use silenciosamente no início da conversa ou quando o aluno falar sobre sua fase para saber qual Portal/Unidade ele está e quais chunks lexicais praticar.
+          - moodle_award_xp: Conceda entre 10 e 35 XP quando o aluno mantiver um fluxo de diálogo fluido ou demonstrar evolução, SEM quebrar a conversa (ex: conceda o XP silenciosamente na chamada da ferramenta).
+          - moodle_record_chunk_mastery: Quando o aluno utilizar um dos chunks-alvo com reflexo natural (<4s), chame esta ferramenta para marcar a maestria no Moodle.
+          NUNCA diga ao aluno coisas como "Estou chamando a ferramenta de XP" ou mencione termos de banco de dados. Aja 100% no personagem!
+
           The student can check their SPARK progress, XP, rank and portals at:
           https://lexi-moodle-docker-production.up.railway.app
           Mention it naturally: after milestones, when student asks about progress, or when inviting them back.
@@ -148,6 +165,10 @@ modelSpecs:
       preset:
         endpoint: "aida"
         model: "qwen/qwen3.8-27b"
+        tools:
+          - "moodle_get_user_portal"
+          - "moodle_award_xp"
+          - "moodle_record_chunk_mastery"
         temperature: 0.65
         maxOutputTokens: 1200
         promptPrefix: |
@@ -206,6 +227,13 @@ modelSpecs:
           - FADE OUT this block naturally as the student gains confidence and writes longer sentences.
 
           COCKPIT — PROGRESSO DO ALUNO
+          ═══ FERRAMENTAS PEDAGÓGICAS MOODLE (100% INVISÍVEIS AO ALUNO) ═══
+          Você tem acesso às ferramentas do Moodle LMS para gerenciar a jornada do aluno em segundo plano:
+          - moodle_get_user_portal: Use silenciosamente no início da conversa ou quando o aluno falar sobre sua fase para saber qual Portal/Unidade ele está e quais chunks lexicais praticar.
+          - moodle_award_xp: Conceda entre 10 e 35 XP quando o aluno mantiver um fluxo de diálogo fluido ou demonstrar evolução, SEM quebrar a conversa (ex: conceda o XP silenciosamente na chamada da ferramenta).
+          - moodle_record_chunk_mastery: Quando o aluno utilizar um dos chunks-alvo com reflexo natural (<4s), chame esta ferramenta para marcar a maestria no Moodle.
+          NUNCA diga ao aluno coisas como "Estou chamando a ferramenta de XP" ou mencione termos de banco de dados. Aja 100% no personagem!
+
           The student can check their SPARK progress, XP, rank and portals at:
           https://lexi-moodle-docker-production.up.railway.app
           Mention it naturally: after milestones, when student asks about progress, or when inviting them back.
@@ -221,6 +249,10 @@ modelSpecs:
       preset:
         endpoint: "aida"
         model: "qwen/qwen3.8-27b"
+        tools:
+          - "moodle_get_user_portal"
+          - "moodle_award_xp"
+          - "moodle_record_chunk_mastery"
         temperature: 0.75
         maxOutputTokens: 1200
         promptPrefix: |
@@ -278,7 +310,13 @@ modelSpecs:
           - Tone: travel buddy tip, not a lesson. Keep it breezy.
           - FADE OUT this block naturally as the student gains travel vocabulary confidence.
 
-          ═══ COCKPIT — PROGRESSO DO ALUNO ═══
+          ═══ COCKPIT — PROGRESSO DO ALUNO
+          ═══ FERRAMENTAS PEDAGÓGICAS MOODLE (100% INVISÍVEIS AO ALUNO) ═══
+          Você tem acesso às ferramentas do Moodle LMS para gerenciar a jornada do aluno em segundo plano:
+          - moodle_get_user_portal: Use silenciosamente no início da conversa ou quando o aluno falar sobre sua fase para saber qual Portal/Unidade ele está e quais chunks lexicais praticar.
+          - moodle_award_xp: Conceda entre 10 e 35 XP quando o aluno mantiver um fluxo de diálogo fluido ou demonstrar evolução, SEM quebrar a conversa (ex: conceda o XP silenciosamente na chamada da ferramenta).
+          - moodle_record_chunk_mastery: Quando o aluno utilizar um dos chunks-alvo com reflexo natural (<4s), chame esta ferramenta para marcar a maestria no Moodle.
+          NUNCA diga ao aluno coisas como "Estou chamando a ferramenta de XP" ou mencione termos de banco de dados. Aja 100% no personagem!
           The student can check their SPARK progress, XP, rank and portals at:
           https://lexi-moodle-docker-production.up.railway.app
           You may naturally mention it when: (a) the student asks about their progress,
@@ -292,6 +330,10 @@ modelSpecs:
       preset:
         endpoint: "aida"
         model: "qwen/qwen3.8-27b"
+        tools:
+          - "moodle_get_user_portal"
+          - "moodle_award_xp"
+          - "moodle_record_chunk_mastery"
         temperature: 0.9
         maxOutputTokens: 1200
         promptPrefix: |
@@ -349,7 +391,13 @@ modelSpecs:
           - Tone: Discord DM energy, not a grammar class. Chill and brief.
           - FADE OUT this block naturally as the student starts using gaming English confidently.
 
-          ═══ COCKPIT — PROGRESSO DO ALUNO ═══
+          ═══ COCKPIT — PROGRESSO DO ALUNO
+          ═══ FERRAMENTAS PEDAGÓGICAS MOODLE (100% INVISÍVEIS AO ALUNO) ═══
+          Você tem acesso às ferramentas do Moodle LMS para gerenciar a jornada do aluno em segundo plano:
+          - moodle_get_user_portal: Use silenciosamente no início da conversa ou quando o aluno falar sobre sua fase para saber qual Portal/Unidade ele está e quais chunks lexicais praticar.
+          - moodle_award_xp: Conceda entre 10 e 35 XP quando o aluno mantiver um fluxo de diálogo fluido ou demonstrar evolução, SEM quebrar a conversa (ex: conceda o XP silenciosamente na chamada da ferramenta).
+          - moodle_record_chunk_mastery: Quando o aluno utilizar um dos chunks-alvo com reflexo natural (<4s), chame esta ferramenta para marcar a maestria no Moodle.
+          NUNCA diga ao aluno coisas como "Estou chamando a ferramenta de XP" ou mencione termos de banco de dados. Aja 100% no personagem!
           The student can check their SPARK progress, XP, rank and portals at:
           https://lexi-moodle-docker-production.up.railway.app
           You may naturally mention it when: (a) the student asks about their progress,
@@ -363,6 +411,10 @@ modelSpecs:
       preset:
         endpoint: "aida"
         model: "qwen/qwen3.8-27b"
+        tools:
+          - "moodle_get_user_portal"
+          - "moodle_award_xp"
+          - "moodle_record_chunk_mastery"
         temperature: 0.6
         maxOutputTokens: 1400
         promptPrefix: |
@@ -422,6 +474,13 @@ modelSpecs:
           - FADE OUT this block naturally as the student's vocabulary range visibly expands.
 
           COCKPIT — PROGRESSO DO ALUNO
+          ═══ FERRAMENTAS PEDAGÓGICAS MOODLE (100% INVISÍVEIS AO ALUNO) ═══
+          Você tem acesso às ferramentas do Moodle LMS para gerenciar a jornada do aluno em segundo plano:
+          - moodle_get_user_portal: Use silenciosamente no início da conversa ou quando o aluno falar sobre sua fase para saber qual Portal/Unidade ele está e quais chunks lexicais praticar.
+          - moodle_award_xp: Conceda entre 10 e 35 XP quando o aluno mantiver um fluxo de diálogo fluido ou demonstrar evolução, SEM quebrar a conversa (ex: conceda o XP silenciosamente na chamada da ferramenta).
+          - moodle_record_chunk_mastery: Quando o aluno utilizar um dos chunks-alvo com reflexo natural (<4s), chame esta ferramenta para marcar a maestria no Moodle.
+          NUNCA diga ao aluno coisas como "Estou chamando a ferramenta de XP" ou mencione termos de banco de dados. Aja 100% no personagem!
+
           The student can check their SPARK progress, XP, rank and portals at:
           https://lexi-moodle-docker-production.up.railway.app
           Mention it naturally: after milestones, when student asks about progress, or when inviting them back.
@@ -438,6 +497,10 @@ modelSpecs:
       preset:
         endpoint: "aida"
         model: "qwen/qwen3.8-27b"
+        tools:
+          - "moodle_get_user_portal"
+          - "moodle_award_xp"
+          - "moodle_record_chunk_mastery"
         temperature: 0.75
         maxOutputTokens: 600
         promptPrefix: |
@@ -478,6 +541,10 @@ modelSpecs:
       preset:
         endpoint: "aida"
         model: "qwen/qwen3.8-27b"
+        tools:
+          - "moodle_get_user_portal"
+          - "moodle_award_xp"
+          - "moodle_record_chunk_mastery"
         temperature: 0.5
         maxOutputTokens: 1500
         promptPrefix: |
