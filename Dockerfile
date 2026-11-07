@@ -24,13 +24,13 @@ RUN node -e "\
 const fs = require('fs');\
 const path = '/app/client/dist/index.html';\
 let html = fs.readFileSync(path, 'utf8');\
-html = html.replace(/<title>[\\s\\S]*?<\\/title>/gi, '<title>AIDA — Aprenda Inglês por Imersão Ativa</title>');\
+html = html.replace(/<title>[\\s\\S]*?<\\/title>/gi, '<title>LexiQuest · AIDA Cyber-Zen RPG</title>');\
 html = html.replace(/<meta name=\"description\".*?>/, '<meta name=\"description\" content=\"AIDA — Aprenda inglês por imersão ativa com tutores de IA. Sem aulas chatas, sem gramática decorada. Conversação real desde o primeiro dia.\" />');\
 html = html.replace(/assets\/favicon-32x32\.png/g, 'assets/logo.svg');\
 html = html.replace(/assets\/favicon-16x16\.png/g, 'assets/logo.svg');\
 html = html.replace(/assets\/apple-touch-icon-180x180\.png/g, 'assets/logo.svg');\
 html = html.replace(/type=\"image\/png\"/g, 'type=\"image/svg+xml\"');\
-const ogTags = '<link rel=\"stylesheet\" href=\"/assets/rpg-theme.css\" />\\n<meta property=\"og:title\" content=\"AIDA — Aprenda Inglês por Imersão Ativa\" />\\n<meta property=\"og:image\" content=\"https://lexi-moodle-docker-production.up.railway.app/assets/aida-og.png\" />\\n<meta property=\"og:description\" content=\"Converse com tutores de IA especializados e aprenda inglês do jeito que o cérebro foi feito para aprender — por imersão.\" />\\n<meta name=\"twitter:card\" content=\"summary_large_image\" />\\n<meta name=\"twitter:image\" content=\"https://lexi-moodle-docker-production.up.railway.app/assets/aida-og.png\" />\\n';\
+const ogTags = '<link rel=\"stylesheet\" href=\"/assets/rpg-theme.css\" />\\n<meta property=\"og:title\" content=\"LexiQuest · AIDA Cyber-Zen RPG\" />\\n<meta property=\"og:image\" content=\"https://lexi-moodle-docker-production.up.railway.app/assets/aida-og.png\" />\\n<meta property=\"og:description\" content=\"Converse com tutores de IA especializados e aprenda inglês do jeito que o cérebro foi feito para aprender — por imersão.\" />\\n<meta name=\"twitter:card\" content=\"summary_large_image\" />\\n<meta name=\"twitter:image\" content=\"https://lexi-moodle-docker-production.up.railway.app/assets/aida-og.png\" />\\n';\
 html = html.replace('</head>', ogTags + '</head>');\
 fs.writeFileSync(path, html);\
 \
