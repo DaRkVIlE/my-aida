@@ -72,7 +72,7 @@ modelSpecs:
       default: true
       label: "🎬 Jordan [Rank D] — Street Pathfinder (Austin)"
       description: "Descongelamento da Fala · Chunks de Sobrevivência & Imprevistos · Austin/JFK"
-      iconURL: "/assets/guardians/jordan.svg"
+      iconURL: "/assets/guardians/jordan.webp"
       group: "🛡️ Guardiões da Montanha B2"
       preset:
         endpoint: "aida"
@@ -166,7 +166,7 @@ modelSpecs:
     - name: "alexandra"
       label: "💼 Alexandra [Rank A] — Articulate Sovereign (Chicago)"
       description: "Fronteira Executiva · Argumentação C-Level, Pitch & Negociação sob Pressão"
-      iconURL: "/assets/guardians/alexandra.svg"
+      iconURL: "/assets/guardians/alexandra.webp"
       group: "🛡️ Guardiões da Montanha B2"
       preset:
         endpoint: "aida"
@@ -255,7 +255,7 @@ modelSpecs:
     - name: "miles"
       label: "✈️ Miles [Rank C] — Conversational Player (Nômade)"
       description: "Velocidade Digital · Logística, Hotéis, Voos & Comunicação Assíncrona"
-      iconURL: "/assets/guardians/miles.svg"
+      iconURL: "/assets/guardians/miles.webp"
       group: "🛡️ Guardiões da Montanha B2"
       preset:
         endpoint: "aida"
@@ -341,7 +341,7 @@ modelSpecs:
     - name: "zack"
       label: "🎮 Zack [Rank B] — Corporate Vanguard (San Jose)"
       description: "Tração Conversacional · Small Talk Ágil, Cultura Pop, Games & Humor"
-      iconURL: "/assets/guardians/zack.svg"
+      iconURL: "/assets/guardians/zack.webp"
       group: "🛡️ Guardiões da Montanha B2"
       preset:
         endpoint: "aida"
@@ -427,7 +427,7 @@ modelSpecs:
     - name: "hayes"
       label: "📚 Prof. Hayes [Portal 0] — Mestre de Fluência & Vocabulário"
       description: "Vocabulário refinado, conexões idiomáticas e refinamento intelectual"
-      iconURL: "/assets/guardians/hayes.svg"
+      iconURL: "/assets/guardians/hayes.webp"
       group: "🛡️ Guardiões da Montanha B2"
       preset:
         endpoint: "aida"
@@ -518,7 +518,7 @@ modelSpecs:
     - name: "aida"
       label: "⚡ AIDA — Oráculo SPARK & Mentoria"
       description: "Guia Pessoal · Alinhamento de Metas, Dúvidas e Preparação de Sessão"
-      iconURL: "/assets/guardians/aida.svg"
+      iconURL: "/assets/guardians/aida.webp"
       group: "🛡️ Guardiões da Montanha B2"
       preset:
         endpoint: "aida"
@@ -563,7 +563,7 @@ modelSpecs:
     - name: "aida-admin"
       label: "🛡️ AIDA Admin — Painel do Gabe"
       description: "Controle pedagógico e operacional. Métricas de alunos, handoffs e gestão do método. ADMIN ONLY."
-      iconURL: "/assets/guardians/aida.svg"
+      iconURL: "/assets/guardians/aida.webp"
       roles: ["ADMIN"]
       preset:
         endpoint: "aida"
