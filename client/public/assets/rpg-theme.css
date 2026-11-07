@@ -1,0 +1,210 @@
+/* ==========================================================================
+   LexiQuest RPG HUD — Dark Cyber-Zen Theme Overrides for LibreChat
+   Method SPARK · Gamified Language Acquisition
+   ========================================================================== */
+
+:root {
+  --rpg-void: #0b0716;
+  --rpg-glass: rgba(31, 22, 51, 0.72);
+  --rpg-glass-strong: rgba(22, 14, 38, 0.92);
+  --rpg-border: rgba(106, 95, 193, 0.35);
+  --rpg-border-bright: rgba(106, 95, 193, 0.65);
+  --rpg-lime: #c2ef4e;
+  --rpg-peach: #ffb287;
+  --rpg-pink: #fa7faa;
+  --rpg-cyan: #38bdf8;
+  --rpg-gold: #facc15;
+  --rpg-violet: #a855f7;
+}
+
+/* ── 1. Fundo Global e Superfícies ────────────────────────────────────────── */
+html, body, #root, .dark, .dark body {
+  background-color: var(--rpg-void) !important;
+  color: #f1f0f5 !important;
+}
+
+.dark {
+  --background: 260 40% 5%;
+  --surface-primary: #0b0716;
+  --surface-secondary: #130c24;
+  --surface-dialog: #1a1033;
+  --surface-chat: #0b0716;
+  --border-light: rgba(106, 95, 193, 0.25);
+  --border-medium: rgba(106, 95, 193, 0.45);
+  --brand-purple: #c2ef4e;
+  --primary: #c2ef4e;
+}
+
+/* ── 2. Top Bar & Header Navegação ───────────────────────────────────────── */
+header, nav, .dark header, .dark nav {
+  background: var(--rpg-glass-strong) !important;
+  backdrop-filter: blur(16px) !important;
+  border-bottom: 1px solid var(--rpg-border) !important;
+  box-shadow: 0 4px 20px rgba(0, 0, 0, 0.35);
+}
+
+/* Model Selector Button / Badge */
+button[data-testid="model-selector-button"],
+button[id^="radix-"] {
+  border: 1px solid var(--rpg-border) !important;
+  background: rgba(31, 22, 51, 0.6) !important;
+  border-radius: 10px !important;
+  transition: all 0.2s ease-in-out !important;
+}
+
+button[data-testid="model-selector-button"]:hover,
+button[id^="radix-"]:hover {
+  border-color: var(--rpg-lime) !important;
+  box-shadow: 0 0 12px rgba(194, 239, 78, 0.25) !important;
+}
+
+/* ── 3. Sidebar / Painel Lateral ─────────────────────────────────────────── */
+.dark .nav-panel,
+.dark aside,
+div[data-testid="nav-wrapper"] {
+  background: rgba(14, 9, 24, 0.96) !important;
+  border-right: 1px solid var(--rpg-border) !important;
+  backdrop-filter: blur(20px) !important;
+}
+
+/* Conversas na Barra Lateral */
+.dark aside a,
+.dark aside button {
+  transition: all 0.15s ease !important;
+  border-radius: 8px !important;
+}
+
+.dark aside a:hover,
+.dark aside button:hover {
+  background: rgba(106, 95, 193, 0.15) !important;
+  border-left: 2px solid var(--rpg-lime) !important;
+}
+
+/* ── 4. Chat Feed & Mensagens RPG ───────────────────────────────────────── */
+.dark .text-message,
+.text-message {
+  border-radius: 14px;
+  line-height: 1.6;
+}
+
+/* Bolha do Usuário (Player / Aprendiz) */
+.dark [data-testid="user-message"],
+div[data-message-author-role="user"] {
+  background: linear-gradient(135deg, rgba(106, 95, 193, 0.22), rgba(43, 29, 71, 0.45)) !important;
+  border: 1px solid var(--rpg-border-bright) !important;
+  border-radius: 16px 16px 4px 16px !important;
+  box-shadow: 0 4px 18px rgba(0, 0, 0, 0.25) !important;
+  color: #ffffff !important;
+}
+
+/* Bolha do Guardião (NPC da Montanha B2) */
+.dark [data-testid="bot-message"],
+div[data-message-author-role="assistant"] {
+  background: rgba(25, 17, 43, 0.75) !important;
+  border-left: 3.5px solid var(--rpg-lime) !important;
+  border-top: 1px solid var(--rpg-border) !important;
+  border-right: 1px solid var(--rpg-border) !important;
+  border-bottom: 1px solid var(--rpg-border) !important;
+  border-radius: 4px 16px 16px 16px !important;
+  box-shadow: 0 4px 24px rgba(0, 0, 0, 0.3) !important;
+}
+
+/* ── 5. Ambient Scene Cards & Tactical Badges ───────────────────────────── */
+blockquote,
+.scene-card {
+  background: rgba(17, 10, 30, 0.85) !important;
+  border-left: 3px solid var(--rpg-lime) !important;
+  border-top: 1px solid rgba(194, 239, 78, 0.25) !important;
+  border-right: 1px solid rgba(194, 239, 78, 0.2) !important;
+  border-bottom: 1px solid rgba(194, 239, 78, 0.2) !important;
+  border-radius: 8px !important;
+  padding: 10px 14px !important;
+  margin: 10px 0 !important;
+  font-size: 0.92rem !important;
+  color: #e2e8f0 !important;
+  box-shadow: 0 2px 12px rgba(194, 239, 78, 0.08) !important;
+}
+
+/* ── 6. Input Area HUD & Controles ───────────────────────────────────────── */
+form textarea,
+div[role="textbox"] {
+  background: rgba(22, 14, 38, 0.85) !important;
+  border: 1px solid var(--rpg-border) !important;
+  border-radius: 12px !important;
+  color: #ffffff !important;
+  box-shadow: inset 0 2px 8px rgba(0, 0, 0, 0.4) !important;
+  transition: all 0.2s ease !important;
+}
+
+form textarea:focus,
+div[role="textbox"]:focus {
+  border-color: var(--rpg-lime) !important;
+  box-shadow: 0 0 16px rgba(194, 239, 78, 0.25), inset 0 2px 8px rgba(0, 0, 0, 0.4) !important;
+}
+
+/* Botão Enviar & Microfone com Efeito Pulso RPG */
+.dark button[aria-label="Send message"],
+.dark button[aria-label="Record voice"],
+button[data-testid="send-button"] {
+  background-color: var(--rpg-lime) !important;
+  color: #0b0716 !important;
+  font-weight: 700 !important;
+  border-radius: 10px !important;
+  box-shadow: 0 0 14px rgba(194, 239, 78, 0.4) !important;
+  transition: transform 0.15s ease, box-shadow 0.15s ease !important;
+}
+
+.dark button[aria-label="Send message"]:hover,
+.dark button[aria-label="Record voice"]:hover,
+button[data-testid="send-button"]:hover {
+  transform: scale(1.06) !important;
+  box-shadow: 0 0 22px rgba(194, 239, 78, 0.75) !important;
+}
+
+/* ── 7. Scrollbar Estilo Cyber-Zen ───────────────────────────────────────── */
+::-webkit-scrollbar {
+  width: 6px;
+  height: 6px;
+}
+::-webkit-scrollbar-track {
+  background: var(--rpg-void);
+}
+::-webkit-scrollbar-thumb {
+  background: #493a7a;
+  border-radius: 4px;
+}
+::-webkit-scrollbar-thumb:hover {
+  background: var(--rpg-lime);
+}
+
+/* ── 8. Avatares e Emblemas Circulares ───────────────────────────────────── */
+img[src*="/assets/guardians/"],
+img[src*="logo.svg"] {
+  filter: drop-shadow(0 0 8px rgba(106, 95, 193, 0.45));
+  border-radius: 50%;
+  transition: transform 0.2s ease, filter 0.2s ease;
+}
+
+img[src*="/assets/guardians/"]:hover {
+  transform: scale(1.08);
+  filter: drop-shadow(0 0 14px rgba(194, 239, 78, 0.65));
+}
+
+/* ── 9. Rodapé & Links Úteis ─────────────────────────────────────────────── */
+footer, .dark footer {
+  background: transparent !important;
+  font-size: 0.82rem !important;
+  color: #a19db8 !important;
+}
+
+footer a, .dark footer a {
+  color: var(--rpg-lime) !important;
+  text-decoration: none !important;
+  font-weight: 600;
+  transition: opacity 0.2s ease;
+}
+
+footer a:hover, .dark footer a:hover {
+  opacity: 0.85;
+  text-decoration: underline !important;
+}

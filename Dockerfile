@@ -14,6 +14,10 @@ COPY aida-logo.svg /app/client/public/assets/logo.svg
 COPY aida-logo.svg /app/client/dist/assets/logo.svg
 COPY client/public/assets/aida-og.png /app/client/dist/assets/aida-og.png
 COPY client/public/assets/aida-og.png /app/client/public/assets/aida-og.png
+COPY client/public/assets/guardians/ /app/client/dist/assets/guardians/
+COPY client/public/assets/guardians/ /app/client/public/assets/guardians/
+COPY client/public/assets/rpg-theme.css /app/client/dist/assets/rpg-theme.css
+COPY client/public/assets/rpg-theme.css /app/client/public/assets/rpg-theme.css
 
 # Injeta o branding no index.html PRÉ-COMPILADO e recria o PWA Manifest
 RUN node -e "\
@@ -26,7 +30,7 @@ html = html.replace(/assets\/favicon-32x32\.png/g, 'assets/logo.svg');\
 html = html.replace(/assets\/favicon-16x16\.png/g, 'assets/logo.svg');\
 html = html.replace(/assets\/apple-touch-icon-180x180\.png/g, 'assets/logo.svg');\
 html = html.replace(/type=\"image\/png\"/g, 'type=\"image/svg+xml\"');\
-const ogTags = '<meta property=\"og:title\" content=\"AIDA — Aprenda Inglês por Imersão Ativa\" />\\n<meta property=\"og:image\" content=\"https://lexi-moodle-docker-production.up.railway.app/assets/aida-og.png\" />\\n<meta property=\"og:description\" content=\"Converse com tutores de IA especializados e aprenda inglês do jeito que o cérebro foi feito para aprender — por imersão.\" />\\n<meta name=\"twitter:card\" content=\"summary_large_image\" />\\n<meta name=\"twitter:image\" content=\"https://lexi-moodle-docker-production.up.railway.app/assets/aida-og.png\" />\\n';\
+const ogTags = '<link rel=\"stylesheet\" href=\"/assets/rpg-theme.css\" />\\n<meta property=\"og:title\" content=\"AIDA — Aprenda Inglês por Imersão Ativa\" />\\n<meta property=\"og:image\" content=\"https://lexi-moodle-docker-production.up.railway.app/assets/aida-og.png\" />\\n<meta property=\"og:description\" content=\"Converse com tutores de IA especializados e aprenda inglês do jeito que o cérebro foi feito para aprender — por imersão.\" />\\n<meta name=\"twitter:card\" content=\"summary_large_image\" />\\n<meta name=\"twitter:image\" content=\"https://lexi-moodle-docker-production.up.railway.app/assets/aida-og.png\" />\\n';\
 html = html.replace('</head>', ogTags + '</head>');\
 fs.writeFileSync(path, html);\
 \
@@ -83,9 +87,9 @@ if (fs.existsSync(pkgPath)) {\
 # Variáveis padrão e Branding AIDA
 ENV HOST=0.0.0.0
 ENV PORT=8080
-ENV APP_TITLE=AIDA
+ENV APP_TITLE="LexiQuest · AIDA Cyber-Zen RPG"
 ENV HELP_AND_FAQ_URL=https://wa.me/5511967239791
-ENV CUSTOM_FOOTER="[LexiQuest](https://lexi-moodle-docker-production.up.railway.app) — Imersão SPARK com Professor Gabe"
+ENV CUSTOM_FOOTER="[🏰 Santuário Moodle](https://lexi-moodle-docker-production.up.railway.app) · [🗺️ Mapa de Quests & Ranks](https://lexi-moodle-docker-production.up.railway.app) · [⚔️ Boss Raids com Gabe](https://wa.me/5511967239791) · Método SPARK"
 ENV ALLOW_SHARED_LINKS_PUBLIC=true
 EXPOSE 8080
 

@@ -1,0 +1,52 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512" width="512" height="512">
+  <defs>
+    <radialGradient id="bg-grad-z" cx="50%" cy="50%" r="50%">
+      <stop offset="0%" stop-color="#2c143d"/>
+      <stop offset="70%" stop-color="#0b0716"/>
+      <stop offset="100%" stop-color="#05030a"/>
+    </radialGradient>
+    <linearGradient id="ring-pink" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" stop-color="#fca5cc"/>
+      <stop offset="50%" stop-color="#fa7faa"/>
+      <stop offset="100%" stop-color="#ec4899"/>
+    </linearGradient>
+    <linearGradient id="glow-pink" x1="0%" y1="0%" x2="0%" y2="100%">
+      <stop offset="0%" stop-color="#fa7faa" stop-opacity="0.8"/>
+      <stop offset="100%" stop-color="#fa7faa" stop-opacity="0"/>
+    </linearGradient>
+    <filter id="neon-glow-z" x="-20%" y="-20%" width="140%" height="140%">
+      <feGaussianBlur stdDeviation="8" result="blur"/>
+      <feComposite in="SourceGraphic" in2="blur" operator="over"/>
+    </filter>
+  </defs>
+
+  <circle cx="256" cy="256" r="246" fill="url(#bg-grad-z)" stroke="#2d1f4d" stroke-width="4"/>
+  <circle cx="256" cy="256" r="236" fill="none" stroke="url(#ring-pink)" stroke-width="8" filter="url(#neon-glow-z)"/>
+  <circle cx="256" cy="256" r="226" fill="none" stroke="#6a5fc1" stroke-width="2" stroke-dasharray="8 6" opacity="0.6"/>
+
+  <circle cx="256" cy="210" r="140" fill="url(#glow-pink)" opacity="0.25"/>
+
+  <!-- Cyber Netrunner Streetwear Hoodie -->
+  <path d="M 120 440 C 130 330, 175 305, 256 305 C 337 305, 382 330, 392 440 Z" fill="#2d1740" stroke="#6a5fc1" stroke-width="3"/>
+  <path d="M 170 440 L 220 310 L 256 360 L 292 310 L 342 440" fill="none" stroke="#fa7faa" stroke-width="3"/>
+
+  <!-- Head & Playful Grin -->
+  <rect x="238" y="260" width="36" height="55" rx="6" fill="#3d2159"/>
+  <ellipse cx="256" cy="205" rx="62" ry="75" fill="#48256a" stroke="#6a5fc1" stroke-width="3"/>
+
+  <!-- Wild Edgy Gamer Haircut -->
+  <path d="M 185 190 C 180 120, 240 100, 290 110 C 330 120, 335 150, 330 190 C 315 170, 295 150, 256 145 C 220 140, 195 165, 185 190 Z" fill="#fa7faa" filter="url(#neon-glow-z)" opacity="0.95"/>
+  <path d="M 280 100 L 310 80 L 295 115" fill="#fca5cc"/>
+
+  <!-- Cyber Visor / Glasses -->
+  <polygon points="205,185 307,185 295,210 217,210" fill="#fa7faa" opacity="0.9" filter="url(#neon-glow-z)"/>
+  <line x1="200" y1="195" x2="312" y2="195" stroke="#ffffff" stroke-width="2"/>
+
+  <!-- Magnetic Smile -->
+  <path d="M 235 235 Q 260 255 285 235" fill="none" stroke="#ffffff" stroke-width="3" stroke-linecap="round"/>
+
+  <!-- Badge Ribbon -->
+  <rect x="156" y="420" width="200" height="44" rx="22" fill="#0b0716" stroke="#fa7faa" stroke-width="3" filter="url(#neon-glow-z)"/>
+  <text x="256" y="448" font-family="'Inter', sans-serif" font-weight="900" font-size="16" fill="#fa7faa" text-anchor="middle" letter-spacing="3">RANK B · ZACK</text>
+  <text x="256" y="475" font-family="'Inter', sans-serif" font-weight="700" font-size="11" fill="#a3a3a3" text-anchor="middle" letter-spacing="1">CORPORATE VANGUARD · TECH</text>
+</svg>

@@ -1,0 +1,50 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512" width="512" height="512">
+  <defs>
+    <radialGradient id="bg-grad-ai" cx="50%" cy="50%" r="50%">
+      <stop offset="0%" stop-color="#341854"/>
+      <stop offset="70%" stop-color="#0b0716"/>
+      <stop offset="100%" stop-color="#05030a"/>
+    </radialGradient>
+    <linearGradient id="ring-violet-gold" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" stop-color="#fde047"/>
+      <stop offset="35%" stop-color="#c084fc"/>
+      <stop offset="70%" stop-color="#a855f7"/>
+      <stop offset="100%" stop-color="#facc15"/>
+    </linearGradient>
+    <linearGradient id="glow-ai" x1="0%" y1="0%" x2="0%" y2="100%">
+      <stop offset="0%" stop-color="#a855f7" stop-opacity="0.8"/>
+      <stop offset="100%" stop-color="#facc15" stop-opacity="0"/>
+    </linearGradient>
+    <filter id="neon-glow-ai" x="-20%" y="-20%" width="140%" height="140%">
+      <feGaussianBlur stdDeviation="8" result="blur"/>
+      <feComposite in="SourceGraphic" in2="blur" operator="over"/>
+    </filter>
+  </defs>
+
+  <circle cx="256" cy="256" r="246" fill="url(#bg-grad-ai)" stroke="#4a2278" stroke-width="4"/>
+  <circle cx="256" cy="256" r="236" fill="none" stroke="url(#ring-violet-gold)" stroke-width="8" filter="url(#neon-glow-ai)"/>
+  <circle cx="256" cy="256" r="226" fill="none" stroke="#facc15" stroke-width="2" stroke-dasharray="10 6" opacity="0.7"/>
+
+  <!-- Ethereal Sacred Geometry Mandala -->
+  <polygon points="256,70 410,256 256,442 102,256" fill="none" stroke="#a855f7" stroke-width="2" opacity="0.4"/>
+  <polygon points="256,90 390,256 256,422 122,256" fill="none" stroke="#facc15" stroke-width="2" opacity="0.3"/>
+  <circle cx="256" cy="256" r="160" fill="none" stroke="#a855f7" stroke-width="1.5" stroke-dasharray="4 8" opacity="0.5"/>
+
+  <!-- Central SPARK Radiant Lightning & Prism -->
+  <circle cx="256" cy="230" r="90" fill="url(#glow-ai)" opacity="0.4"/>
+  <polygon points="256,130 330,230 256,330 182,230" fill="rgba(168, 85, 247, 0.25)" stroke="#facc15" stroke-width="3" filter="url(#neon-glow-ai)"/>
+
+  <!-- Dynamic Golden Lightning Bolt -->
+  <path d="M 268 150 L 225 235 L 262 235 L 244 310 L 295 215 L 255 215 Z" fill="#fde047" stroke="#ffffff" stroke-width="2" filter="url(#neon-glow-ai)"/>
+
+  <!-- Particle Stars -->
+  <circle cx="180" cy="180" r="3" fill="#ffffff"/>
+  <circle cx="330" cy="170" r="3" fill="#ffffff"/>
+  <circle cx="160" cy="290" r="2.5" fill="#fde047"/>
+  <circle cx="350" cy="300" r="2.5" fill="#fde047"/>
+
+  <!-- Badge Ribbon -->
+  <rect x="156" y="420" width="200" height="44" rx="22" fill="#0b0716" stroke="#facc15" stroke-width="3" filter="url(#neon-glow-ai)"/>
+  <text x="256" y="448" font-family="'Inter', sans-serif" font-weight="900" font-size="16" fill="#facc15" text-anchor="middle" letter-spacing="3">ORÁCULO · AIDA</text>
+  <text x="256" y="475" font-family="'Inter', sans-serif" font-weight="700" font-size="11" fill="#c084fc" text-anchor="middle" letter-spacing="1">MÉTODO SPARK COMPANION</text>
+</svg>
