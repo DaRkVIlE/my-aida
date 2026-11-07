@@ -9,15 +9,11 @@ COPY aida-config.yaml /app/aida-config.yaml
 COPY api/ /app/api/
 RUN npm install traverse --no-save
 
-# Substitui as logos da AIDA nos assets públicos e no dist pré-compilado
+# Substitui as logos oficiais do LexiQuest e todos os assets visuais nos diretórios dist e public
 COPY aida-logo.svg /app/client/public/assets/logo.svg
 COPY aida-logo.svg /app/client/dist/assets/logo.svg
-COPY client/public/assets/aida-og.png /app/client/dist/assets/aida-og.png
-COPY client/public/assets/aida-og.png /app/client/public/assets/aida-og.png
-COPY client/public/assets/guardians/ /app/client/dist/assets/guardians/
-COPY client/public/assets/guardians/ /app/client/public/assets/guardians/
-COPY client/public/assets/rpg-theme.css /app/client/dist/assets/rpg-theme.css
-COPY client/public/assets/rpg-theme.css /app/client/public/assets/rpg-theme.css
+COPY client/public/assets/ /app/client/dist/assets/
+COPY client/public/assets/ /app/client/public/assets/
 
 # Injeta o branding no index.html PRÉ-COMPILADO e recria o PWA Manifest
 RUN node -e "\
